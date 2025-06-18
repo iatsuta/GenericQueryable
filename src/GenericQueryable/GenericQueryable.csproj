@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IvAt.GenericQueryable</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IvAt.CommonFramework" />
+  </ItemGroup>
+
+</Project>
