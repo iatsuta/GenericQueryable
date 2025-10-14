@@ -5,6 +5,20 @@ namespace GenericQueryable.UnitTests;
 public class MainTests
 {
     [Fact]
+    public async Task DefaultGenericQueryable_InvokeSumAsync_MethodInvoked()
+    {
+        // Arrange
+        var baseSource = new decimal?[] { 1, 2, 3 };
+        var qSource = baseSource.AsDefaultGenericQueryable();
+
+        // Act
+        var result = await qSource.GenericSumAsync();
+
+        //Assert
+        result.Should().Be(baseSource.Sum());
+    }
+
+    [Fact]
     public async Task DefaultGenericQueryable_InvokeToListAsync_MethodInvoked()
     {
         // Arrange

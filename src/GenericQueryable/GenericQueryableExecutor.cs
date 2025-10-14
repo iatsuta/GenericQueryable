@@ -5,6 +5,8 @@ using CommonFramework;
 using CommonFramework.DictionaryCache;
 using CommonFramework.Maybe;
 
+using GenericQueryable.Fetching;
+
 namespace GenericQueryable;
 
 public abstract class GenericQueryableExecutor : IGenericQueryableExecutor
@@ -35,39 +37,41 @@ public abstract class GenericQueryableExecutor : IGenericQueryableExecutor
 
                       where method.Name == targetMethodName && method.GetGenericArguments().Length == genericArgs.Length
 
-                      let genMethod = method.MakeGenericMethod(genericArgs)
+                      let targetMethod = method.IsGenericMethodDefinition ? method.MakeGenericMethod(genericArgs) : method
 
-                      where genMethod.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes)
+                      where targetMethod.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes)
 
-                      select genMethod;
+                      select targetMethod;
 
         return request.Single();
     }
 
-    protected abstract IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, string path)
+    protected abstract IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
         where TSource : class;
 
     public virtual object Execute(LambdaExpression callExpression)
     {
-        if (callExpression.Body is MethodCallExpression methodCallExpression && methodCallExpression.Method.IsGenericMethod)
+        if (callExpression.Body is MethodCallExpression methodCallExpression)
         {
-            var genMethod = methodCallExpression.Method.GetGenericMethodDefinition();
-
-            if (genMethod == GenericQueryableMethodHelper.WithFetchMethod)
+            if (methodCallExpression.Method.IsGenericMethod)
             {
-                var sourceType = methodCallExpression.Method.GetParameters().First().ParameterType
-                                                     .GetInterfaceImplementationArgument(typeof(IQueryable<>))!;
+                if (methodCallExpression.Method.GetGenericMethodDefinition() == GenericQueryableMethodHelper.WithFetchRuleMethod)
+                {
+                    var sourceType = methodCallExpression.Method.GetParameters().First().ParameterType
+                        .GetInterfaceImplementationArgument(typeof(IQueryable<>))!;
 
-                return new Func<IQueryable<object>, string, IQueryable<object>>(this.ApplyFetch)
-                       .CreateGenericMethod(sourceType)
-                       .Invoke(this, methodCallExpression.Arguments.Select(arg => arg.GetMemberConstValue().GetValue()).ToArray())!;
+                    return new Func<IQueryable<object>, FetchRule<object>, IQueryable<object>>(this.ApplyFetch)
+                        .CreateGenericMethod(sourceType)
+                        .Invoke(this, methodCallExpression.Arguments.Select(arg => arg.GetMemberConstValue().GetValue()).ToArray())!;
+                }
             }
-            else if (methodCallExpression.Type.IsGenericTypeImplementation(typeof(Task<>)))
+            
+            if (methodCallExpression.Type.IsGenericTypeImplementation(typeof(Task<>)))
             {
                 var args = methodCallExpression
-                           .Arguments
-                           .Take(this.GetParameterCount(methodCallExpression.Method))
-                           .Select(arg => arg.GetMemberConstValue().GetValue()).ToArray();
+                    .Arguments
+                    .Take(this.GetParameterCount(methodCallExpression.Method))
+                    .Select(arg => arg.GetMemberConstValue().GetValue()).ToArray();
 
                 return this.mappingMethodCache[methodCallExpression.Method].Invoke(null, args)!;
             }

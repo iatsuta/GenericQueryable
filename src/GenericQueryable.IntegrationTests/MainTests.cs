@@ -1,4 +1,6 @@
 ﻿using GenericQueryable.EntityFramework;
+using GenericQueryable.Fetching;
+using GenericQueryable.IntegrationTests.Domain;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +13,7 @@ public class MainTests
     public async Task DefaultGenericQueryable_InvokeToListAsync_MethodInvoked()
     {
         // Arrange
+        var ct = CancellationToken.None;
 
         var sp = new ServiceCollection()
             .AddDbContext<TestDbContext>(optionsBuilder => optionsBuilder
@@ -22,19 +25,25 @@ public class MainTests
 
         var dbContext = sp.GetRequiredService<TestDbContext>();
 
-        await dbContext.Database.EnsureDeletedAsync();
-        await dbContext.Database.EnsureCreatedAsync();
+        await dbContext.Database.EnsureDeletedAsync(ct);
+        await dbContext.Database.EnsureCreatedAsync(ct);
 
         var testSet = dbContext.Set<TestObject>();
 
+        var fetchObj = new FetchObject();
+
+        await dbContext.Set<FetchObject>().AddAsync(fetchObj, ct);
+
         var testObj = new TestObject { Id = Guid.NewGuid() };
 
-        await testSet.AddAsync(testObj);
+        await testSet.AddAsync(testObj, ct);
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(ct);
 
         // Act
-        var result = await testSet.GenericToListAsync();
+        var result = await testSet
+            .WithFetch(FetchRule<TestObject>.Create(v => v.DeepFetchObjects).FetchThen(v => v.FetchObject))
+            .GenericToListAsync(cancellationToken: ct);
 
         //Assert
         result.Should().Contain(testObj);

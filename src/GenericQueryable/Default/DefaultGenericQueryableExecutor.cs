@@ -2,6 +2,8 @@
 
 using CommonFramework;
 
+using GenericQueryable.Fetching;
+
 namespace GenericQueryable.Default;
 
 public class DefaultGenericQueryableExecutor : GenericQueryableExecutor
@@ -36,7 +38,7 @@ public class DefaultGenericQueryableExecutor : GenericQueryableExecutor
         }
     }
 
-    protected override IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, string path)
+    protected override IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
     {
         return source;
     }
