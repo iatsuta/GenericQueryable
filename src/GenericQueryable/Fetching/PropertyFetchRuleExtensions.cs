@@ -4,12 +4,6 @@ namespace GenericQueryable.Fetching;
 
 public static class PropertyFetchRuleExtensions
 {
-    public static PropertyFetchRule<TSource, TNextProperty> Fetch<TSource, TLastProperty, TNextProperty>(
-        this PropertyFetchRule<TSource, TLastProperty> fetchRule, Expression<Func<TSource, TNextProperty>> path)
-    {
-        return new PropertyFetchRule<TSource, TNextProperty>(fetchRule.Paths.Concat([new FetchPath([path])]).ToList());
-    }
-
     public static PropertyFetchRule<TSource, TNextProperty> FetchThen<TSource, TLastProperty, TNextProperty>(this IPropertyFetchRule<TSource, TLastProperty> fetchRule,
         Expression<Func<TLastProperty, TNextProperty>> prop)
     {

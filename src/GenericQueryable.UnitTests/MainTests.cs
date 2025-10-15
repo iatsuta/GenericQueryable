@@ -1,4 +1,5 @@
 ﻿using GenericQueryable.Default;
+using GenericQueryable.Fetching;
 
 namespace GenericQueryable.UnitTests;
 
