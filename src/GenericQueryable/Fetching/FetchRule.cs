@@ -2,7 +2,7 @@
 
 namespace GenericQueryable.Fetching;
 
-public abstract record FetchRule<TSource> : IFetchRule<TSource>
+public abstract record FetchRule<TSource>
 {
     public static FetchRule<TSource> Create(string path)
     {

@@ -4,25 +4,25 @@ namespace GenericQueryable.Fetching;
 
 public static class PropertyFetchRuleExtensions
 {
-    public static IPropertyFetchRule<TSource, TNextProperty> Fetch<TSource, TLastProperty, TNextProperty>(
+    public static PropertyFetchRule<TSource, TNextProperty> Fetch<TSource, TLastProperty, TNextProperty>(
         this PropertyFetchRule<TSource, TLastProperty> fetchRule, Expression<Func<TSource, TNextProperty>> path)
     {
         return new PropertyFetchRule<TSource, TNextProperty>(fetchRule.Paths.Concat([new FetchPath([path])]).ToList());
     }
 
-    public static IPropertyFetchRule<TSource, TNextProperty> FetchThen<TSource, TLastProperty, TNextProperty>(this IPropertyFetchRule<TSource, TLastProperty> fetchRule,
+    public static PropertyFetchRule<TSource, TNextProperty> FetchThen<TSource, TLastProperty, TNextProperty>(this IPropertyFetchRule<TSource, TLastProperty> fetchRule,
         Expression<Func<TLastProperty, TNextProperty>> prop)
     {
         return fetchRule.FetchThenInternal<TSource, TNextProperty>(prop);
     }
 
-    public static IPropertyFetchRule<TSource, TNextProperty> FetchThen<TSource, TLastProperty, TNextProperty>(this IPropertyFetchRule<TSource, IEnumerable<TLastProperty>> fetchRule,
+    public static PropertyFetchRule<TSource, TNextProperty> FetchThen<TSource, TLastProperty, TNextProperty>(this IPropertyFetchRule<TSource, IEnumerable<TLastProperty>> fetchRule,
         Expression<Func<TLastProperty, TNextProperty>> prop)
     {
         return fetchRule.FetchThenInternal<TSource, TNextProperty>(prop);
     }
 
-    private static IPropertyFetchRule<TSource, TNextProperty> FetchThenInternal<TSource, TNextProperty>(this IPropertyFetchRule<TSource> fetchRule, LambdaExpression prop)
+    private static PropertyFetchRule<TSource, TNextProperty> FetchThenInternal<TSource, TNextProperty>(this IPropertyFetchRule<TSource> fetchRule, LambdaExpression prop)
     {
         var prevPaths = fetchRule.Paths.SkipLast(1);
 
