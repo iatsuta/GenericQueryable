@@ -11,7 +11,7 @@ public static class GenericQueryableFetchExtensions
         return source.WithFetch(new UntypedFetchRule<TSource>(fetchPath));
     }
 
-    public static IQueryable<TSource> WithFetch<TSource>(this IQueryable<TSource> source, IFetchRule<TSource> fetchRule)
+    public static IQueryable<TSource> WithFetch<TSource>(this IQueryable<TSource> source, FetchRule<TSource> fetchRule)
     {
         Expression<Func<IQueryable<TSource>>> callExpression = () => source.WithFetch(fetchRule);
 
