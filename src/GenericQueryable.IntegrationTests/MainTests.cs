@@ -42,7 +42,7 @@ public class MainTests
 
         // Act
         var result = await testSet
-            .WithFetch(r => r.Fetch(v => v.DeepFetchObjects).FetchThen(v => v.FetchObject))
+            .WithFetch(r => r.Fetch(v => v.DeepFetchObjects).ThenFetch(v => v.FetchObject))
             .GenericToListAsync(cancellationToken: ct);
 
         //Assert
