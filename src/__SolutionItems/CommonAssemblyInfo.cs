@@ -3,7 +3,7 @@
 [assembly: AssemblyProduct("GenericQueryable")]
 [assembly: AssemblyCompany("IvAt")]
 
-[assembly: AssemblyVersion("1.2.2.2")]
+[assembly: AssemblyVersion("1.3.0.3")]
 [assembly: AssemblyInformationalVersion("changes at build")]
 
 #if DEBUG
