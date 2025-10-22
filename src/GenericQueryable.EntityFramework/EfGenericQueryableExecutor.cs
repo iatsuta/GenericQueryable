@@ -66,13 +66,13 @@ public class EfGenericQueryableExecutor : GenericQueryableExecutor
             if (prevPropRealType.IsGenericType && typeof(IEnumerable<>).MakeGenericType(prevElementType).IsAssignableFrom(prevPropRealType))
             {
                 return new Func<IIncludableQueryable<TSource, IEnumerable<Ignore>>, Expression<Func<Ignore, Ignore>>, IIncludableQueryable<TSource, Ignore>>(
-                        this.ApplyFetchThen)
+                        this.ApplyThenFetch)
                     .CreateGenericMethod(typeof(TSource), prevElementType, nextPropertyType);
             }
             else
             {
                 return new Func<IIncludableQueryable<TSource, Ignore>, Expression<Func<Ignore, Ignore>>, IIncludableQueryable<TSource, Ignore>>(
-                        this.ApplyFetchThen)
+                        this.ApplyThenFetch)
                     .CreateGenericMethod(typeof(TSource), prevElementType, nextPropertyType);
             }
         }
@@ -84,14 +84,14 @@ public class EfGenericQueryableExecutor : GenericQueryableExecutor
         return source.Include(prop);
     }
 
-    private IIncludableQueryable<TSource, TNextProperty> ApplyFetchThen<TSource, TPrevProperty, TNextProperty>(
+    private IIncludableQueryable<TSource, TNextProperty> ApplyThenFetch<TSource, TPrevProperty, TNextProperty>(
         IIncludableQueryable<TSource, IEnumerable<TPrevProperty>> source, Expression<Func<TPrevProperty, TNextProperty>> prop)
         where TSource : class
     {
         return source.ThenInclude(prop);
     }
 
-    private IIncludableQueryable<TSource, TNextProperty> ApplyFetchThen<TSource, TPrevProperty, TNextProperty>(
+    private IIncludableQueryable<TSource, TNextProperty> ApplyThenFetch<TSource, TPrevProperty, TNextProperty>(
         IIncludableQueryable<TSource, TPrevProperty> source, Expression<Func<TPrevProperty, TNextProperty>> prop)
         where TSource : class
     {
