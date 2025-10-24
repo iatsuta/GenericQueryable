@@ -10,6 +10,10 @@
 
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <RepositoryUrl>https://github.com/iatsuta/GenericQueryable</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
   </PropertyGroup>
 
   <PropertyGroup>
