@@ -1,5 +1,4 @@
-﻿using GenericQueryable.Default;
-using GenericQueryable.Fetching;
+﻿using GenericQueryable.Fetching;
 
 namespace GenericQueryable.UnitTests;
 
@@ -10,7 +9,7 @@ public class MainTests
     {
         // Arrange
         var baseSource = new decimal?[] { 1, 2, 3 };
-        var qSource = baseSource.AsDefaultGenericQueryable();
+        var qSource = baseSource.AsQueryable();
 
         // Act
         var result = await qSource.GenericSumAsync();
@@ -24,7 +23,7 @@ public class MainTests
     {
         // Arrange
         var baseSource = new[] { 1, 2, 3 };
-        var qSource = baseSource.AsDefaultGenericQueryable();
+        var qSource = baseSource.AsQueryable();
 
         // Act
         var result = await qSource.GenericToListAsync();
@@ -38,7 +37,7 @@ public class MainTests
     {
         // Arrange
         var baseSource = new[] { 1, 2, 3 };
-        var qSource = baseSource.AsDefaultGenericQueryable();
+        var qSource = baseSource.AsQueryable();
 
         // Act
         var result = qSource.ToList();
@@ -52,7 +51,7 @@ public class MainTests
     {
         // Arrange
         var baseSource = 1;
-        var qSource = new[] { baseSource }.AsDefaultGenericQueryable();
+        var qSource = new[] { baseSource }.AsQueryable();
 
         // Act
         var result = await qSource.GenericSingleOrDefaultAsync(_ => true);
@@ -66,7 +65,7 @@ public class MainTests
     {
         // Arrange
         var baseSource = "abc";
-        var qSource = new[] { baseSource }.AsDefaultGenericQueryable();
+        var qSource = new[] { baseSource }.AsQueryable();
 
         // Act
         var result = await qSource.WithFetch(nameof(string.Length))

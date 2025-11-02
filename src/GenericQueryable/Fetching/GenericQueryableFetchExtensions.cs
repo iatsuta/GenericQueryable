@@ -1,23 +1,17 @@
-﻿using System.Linq.Expressions;
-
-namespace GenericQueryable.Fetching;
+﻿namespace GenericQueryable.Fetching;
 
 public static class GenericQueryableFetchExtensions
 {
     public static IQueryable<TSource> WithFetch<TSource>(this IQueryable<TSource> source, string fetchPath)
-    {
-        return source.WithFetch(new UntypedFetchRule<TSource>(fetchPath));
-    }
+        where TSource : class
+        => source.WithFetch(new UntypedFetchRule<TSource>(fetchPath));
 
-    public static IQueryable<TSource> WithFetch<TSource>(this IQueryable<TSource> source, Func<PropertyFetchRule<TSource>, PropertyFetchRule<TSource>> fetchRule)
-    {
-        return source.WithFetch(fetchRule(new PropertyFetchRule<TSource>([])));
-    }
+    public static IQueryable<TSource> WithFetch<TSource>(this IQueryable<TSource> source,
+        Func<PropertyFetchRule<TSource>, PropertyFetchRule<TSource>> fetchRule)
+        where TSource : class
+        => source.WithFetch(fetchRule(new PropertyFetchRule<TSource>([])));
 
     public static IQueryable<TSource> WithFetch<TSource>(this IQueryable<TSource> source, FetchRule<TSource> fetchRule)
-    {
-        Expression<Func<IQueryable<TSource>>> callExpression = () => source.WithFetch(fetchRule);
-
-        return source.Provider.Execute<IQueryable<TSource>>(new GenericQueryableExecuteExpression(callExpression));
-    }
+        where TSource : class
+        => source.Execute(executor => executor.ApplyFetch(source, fetchRule));
 }

@@ -1,14 +1,15 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 
 using CommonFramework;
 
 using GenericQueryable.Fetching;
 
-namespace GenericQueryable.Default;
+namespace GenericQueryable;
 
-public class DefaultGenericQueryableExecutor : GenericQueryableExecutor
+public class SyncGenericQueryableExecutor(Type extensionsType) : GenericQueryableExecutor
 {
-    protected override Type ExtensionsType { get; } = typeof(Queryable);
+    protected override Type ExtensionsType { get; } = extensionsType;
 
     protected override string GetTargetMethodName(MethodInfo baseMethod) => base.GetTargetMethodName(baseMethod).SkipLast("Async", true);
 
@@ -38,8 +39,18 @@ public class DefaultGenericQueryableExecutor : GenericQueryableExecutor
         }
     }
 
-    protected override IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
+    public override Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> callExpression)
+    {
+        var pureResult = base.Execute<TResult>(callExpression);
+
+        return Task.FromResult(pureResult);
+    }
+
+    public override IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
     {
         return source;
     }
+
+    public static SyncGenericQueryableExecutor Default { get; } = new(typeof(Queryable));
+
 }
