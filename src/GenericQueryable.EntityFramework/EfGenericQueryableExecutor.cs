@@ -4,6 +4,7 @@ using System.Reflection;
 using CommonFramework;
 
 using GenericQueryable.Fetching;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -11,7 +12,7 @@ namespace GenericQueryable.EntityFramework;
 
 public class EfGenericQueryableExecutor : GenericQueryableExecutor
 {
-    protected override Type ExtensionsType { get; } = typeof(EntityFrameworkQueryableExtensions);
+    protected override IReadOnlyList<Type> ExtensionsTypes { get; } = [typeof(EntityFrameworkQueryableExtensions)];
 
     public override Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> expression)
     {
