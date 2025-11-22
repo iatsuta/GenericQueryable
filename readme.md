@@ -24,24 +24,10 @@ This design promotes clean architecture, simplifies mocking, and allows applicat
 GenericQueryable includes basic async extension methods for `IQueryable<T>` in [`GenericQueryableExtensions.cs`](./src/GenericQueryable/GenericQueryableExtensions.cs).  
 You can add your own ORM-specific extensions (e.g., `ContainsAsync`, `AnyAsync`, etc.) by creating static extension classes in your infrastructure layer.
 
-## Unit Testing
-
-You can test code using GenericQueryable without any real database by assigning a mock async executor for `IQueryable<T>` using the `.AsDefaultGenericQueryable()` helper:
-
-```csharp
-.AsDefaultGenericQueryable();
-```
-	 
 ## EntityFramework
 
-To integrate GenericQueryable with Entity Framework Core, call UseGenericQueryable() on DbContextOptionsBuilder when configuring your DbContext.
+To integrate GenericQueryable with Entity Framework Core, call `UseGenericQueryable()` on `DbContextOptionsBuilder` when configuring your `DbContext`:
 
 ```csharp
 services.AddDbContext<MyDbContext>(options =>
-    options.UseGenericQueryable() // Registers GenericQueryable async query provider for EF Core
-```
-
-## Roadmap
-
-- Add support for `Include` methods with strongly-typed lambda expressions to enable more expressive eager loading.  
-- Implement `Lock` functionality to provide mechanisms for explicit locking and concurrency control in queries.
+    options.UseGenericQueryable()); // Registers GenericQueryable async query provider for EF Core
