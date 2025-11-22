@@ -1,15 +1,18 @@
-﻿using System.Linq.Expressions;
-using System.Reflection;
-
-using CommonFramework;
+﻿using CommonFramework;
 
 using GenericQueryable.Fetching;
 
+using System.Linq.Expressions;
+using System.Reflection;
+
 namespace GenericQueryable;
 
-public class SyncGenericQueryableExecutor(Type extensionsType) : GenericQueryableExecutor
+public class SyncGenericQueryableExecutor(Type mainType, Type enumerableType) : GenericQueryableExecutor
 {
-    protected override Type ExtensionsType { get; } = extensionsType;
+    private readonly IReadOnlySet<string> enumerableMethods =
+        new[] { nameof(Enumerable.ToList), nameof(Enumerable.ToHashSet), nameof(Enumerable.ToDictionary) }.ToHashSet();
+
+    protected override IReadOnlyList<Type> ExtensionsTypes { get; } = [mainType, enumerableType];
 
     protected override string GetTargetMethodName(MethodInfo baseMethod) => base.GetTargetMethodName(baseMethod).SkipLast("Async", true);
 
@@ -26,24 +29,25 @@ public class SyncGenericQueryableExecutor(Type extensionsType) : GenericQueryabl
         }
     }
 
-    protected override MethodInfo GetTargetMethod(MethodInfo baseMethod)
+    protected override IEnumerable<Type> GetTargetMethodParameterTypes(MethodInfo targetMethod)
     {
-        if (baseMethod.Name == nameof(GenericQueryableExtensions.GenericToListAsync))
+        if (enumerableMethods.Contains(targetMethod.Name))
         {
-            return typeof(Enumerable).GetMethod(nameof(Enumerable.ToList))!.MakeGenericMethod(
-                baseMethod.GetGenericArguments());
+            var baseTypes = targetMethod.GetParameters().Select(p => p.ParameterType).ToList();
+
+            var sourceType = baseTypes.First().GetGenericTypeImplementationArgument(typeof(IEnumerable<>))!;
+
+            return new[] { typeof(IQueryable<>).MakeGenericType(sourceType) }.Concat(baseTypes.Skip(1));
         }
         else
         {
-            return base.GetTargetMethod(baseMethod);
+            return base.GetTargetMethodParameterTypes(targetMethod);
         }
     }
 
-    public override Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> callExpression)
+    public override async Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> callExpression)
     {
-        var pureResult = base.Execute<TResult>(callExpression);
-
-        return Task.FromResult(pureResult);
+        return base.Execute<TResult>(callExpression);
     }
 
     public override IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
@@ -51,6 +55,5 @@ public class SyncGenericQueryableExecutor(Type extensionsType) : GenericQueryabl
         return source;
     }
 
-    public static SyncGenericQueryableExecutor Default { get; } = new(typeof(Queryable));
-
+    public static SyncGenericQueryableExecutor Default { get; } = new(typeof(Queryable), typeof(Enumerable));
 }

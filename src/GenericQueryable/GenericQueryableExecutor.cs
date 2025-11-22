@@ -16,7 +16,7 @@ public abstract class GenericQueryableExecutor : IGenericQueryableExecutor
     protected GenericQueryableExecutor() =>
         this.mappingMethodCache = new DictionaryCache<MethodInfo, MethodInfo>(this.GetTargetMethod).WithLock();
 
-    protected abstract Type ExtensionsType { get; }
+    protected abstract IReadOnlyList<Type> ExtensionsTypes { get; }
 
     protected virtual string GetTargetMethodName(MethodInfo baseMethod) => baseMethod.Name.Skip("Generic", true);
 
@@ -33,19 +33,26 @@ public abstract class GenericQueryableExecutor : IGenericQueryableExecutor
 
         var parameterTypes = baseMethod.GetParameters().Take(this.GetParameterCount(baseMethod)).Select(p => p.ParameterType).ToArray();
 
-        var request = 
-            
-            from method in this.ExtensionsType.GetMethods(BindingFlags.Public | BindingFlags.Static)
+        var request =
+
+            from extensionsType in this.ExtensionsTypes
+
+            from method in extensionsType.GetMethods(BindingFlags.Public | BindingFlags.Static)
 
             where method.Name == targetMethodName && method.GetGenericArguments().Length == genericArgs.Length
 
             let targetMethod = method.IsGenericMethodDefinition ? method.MakeGenericMethod(genericArgs) : method
 
-            where targetMethod.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes)
+            where this.GetTargetMethodParameterTypes(targetMethod).SequenceEqual(parameterTypes)
 
             select targetMethod;
 
         return request.Single();
+    }
+
+    protected virtual IEnumerable<Type> GetTargetMethodParameterTypes(MethodInfo targetMethod)
+    {
+        return targetMethod.GetParameters().Select(p => p.ParameterType);
     }
 
     public abstract Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> expression);

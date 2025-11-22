@@ -9,6 +9,49 @@ public static class GenericQueryableExtensions
         CancellationToken cancellationToken = default(CancellationToken)) =>
         source.ExecuteAsync(() => source.GenericToListAsync(cancellationToken));
 
+    public static Task<HashSet<TSource>> GenericToHashSetAsync<TSource>(
+        this IQueryable<TSource> source,
+        CancellationToken cancellationToken = default(CancellationToken)) =>
+        source.ExecuteAsync(() => source.GenericToHashSetAsync(cancellationToken));
+
+    public static Task<HashSet<TSource>> GenericToHashSetAsync<TSource>(
+        this IQueryable<TSource> source,
+        IEqualityComparer<TSource>? comparer,
+        CancellationToken cancellationToken = default(CancellationToken)) =>
+        source.ExecuteAsync(() => source.GenericToHashSetAsync(comparer, cancellationToken));
+
+    public static Task<Dictionary<TKey, TSource>> GenericToDictionaryAsync<TSource, TKey>(
+        this IQueryable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        CancellationToken cancellationToken = default(CancellationToken))
+        where TKey : notnull =>
+        source.ExecuteAsync(() => source.GenericToDictionaryAsync(keySelector, cancellationToken));
+
+    public static Task<Dictionary<TKey, TSource>> GenericToDictionaryAsync<TSource, TKey>(
+        this IQueryable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        IEqualityComparer<TKey> comparer,
+        CancellationToken cancellationToken = default(CancellationToken))
+        where TKey : notnull =>
+        source.ExecuteAsync(() => source.GenericToDictionaryAsync(keySelector, comparer, cancellationToken));
+
+    public static Task<Dictionary<TKey, TElement>> GenericToDictionaryAsync<TSource, TKey, TElement>(
+        this IQueryable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        Func<TSource, TElement> elementSelector,
+        CancellationToken cancellationToken = default(CancellationToken))
+        where TKey : notnull =>
+        source.ExecuteAsync(() => source.GenericToDictionaryAsync(keySelector, elementSelector, cancellationToken));
+
+    public static Task<Dictionary<TKey, TElement>> GenericToDictionaryAsync<TSource, TKey, TElement>(
+        this IQueryable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        Func<TSource, TElement> elementSelector,
+        IEqualityComparer<TKey>? comparer,
+        CancellationToken cancellationToken = default(CancellationToken))
+        where TKey : notnull =>
+        source.ExecuteAsync(() => source.GenericToDictionaryAsync(keySelector, elementSelector, comparer, cancellationToken));
+
     public static Task<TSource> GenericSingleAsync<TSource>(
         this IQueryable<TSource> source,
         CancellationToken cancellationToken = default(CancellationToken)) =>
@@ -45,6 +88,12 @@ public static class GenericQueryableExtensions
         this IQueryable<TSource> source,
         CancellationToken cancellationToken = default(CancellationToken)) =>
         source.ExecuteAsync(() => source.GenericCountAsync(cancellationToken));
+
+    public static Task<bool> GenericAllAsync<TSource>(
+        this IQueryable<TSource> source,
+        Expression<Func<TSource, bool>> filter,
+        CancellationToken cancellationToken = default(CancellationToken)) =>
+        source.ExecuteAsync(() => source.GenericAllAsync(filter, cancellationToken));
 
     public static Task<bool> GenericAnyAsync<TSource>(
         this IQueryable<TSource> source,
