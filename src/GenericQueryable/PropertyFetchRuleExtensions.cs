@@ -6,7 +6,12 @@ namespace GenericQueryable;
 
 public static class PropertyFetchRuleExtensions
 {
-    public static PropertyFetchRule<TSource, TNextProperty> ThenFetch<TSource, TLastProperty, TNextProperty>(this IPropertyFetchRule<TSource, TLastProperty> fetchRule,
+	public static PropertyFetchRule<TSource> ToFetchRule<TSource>(this Func<PropertyFetchRule<TSource>, PropertyFetchRule<TSource>> buildFetchRule)
+	{
+		return buildFetchRule(FetchRule<TSource>.Empty);
+	}
+
+	public static PropertyFetchRule<TSource, TNextProperty> ThenFetch<TSource, TLastProperty, TNextProperty>(this IPropertyFetchRule<TSource, TLastProperty> fetchRule,
         Expression<Func<TLastProperty, TNextProperty>> prop)
     {
         return fetchRule.ThenFetchInternal<TSource, TNextProperty>(prop);
