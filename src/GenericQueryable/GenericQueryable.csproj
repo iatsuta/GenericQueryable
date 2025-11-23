@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="IvAt.CommonFramework" />
+    <PackageReference Include="IvAt.CommonFramework.DependencyInjection" />
   </ItemGroup>
 
 </Project>

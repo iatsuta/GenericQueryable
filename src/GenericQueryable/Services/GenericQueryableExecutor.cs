@@ -23,5 +23,5 @@ public class GenericQueryableExecutor(IMethodRedirector methodRedirector, IFetch
 		new GenericQueryableExecutor(
 			new SyncMethodRedirector(
 				new SyncTargetMethodExtractor(typeof(Queryable), typeof(Enumerable))),
-			new IdentityFetchService());
+			new IgnoreFetchService());
 }

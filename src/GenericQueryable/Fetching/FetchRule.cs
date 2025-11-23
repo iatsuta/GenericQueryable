@@ -13,4 +13,6 @@ public abstract record FetchRule<TSource>
     {
         return new PropertyFetchRule<TSource, TProperty>([new FetchPath([prop])]);
     }
+
+    public static PropertyFetchRule<TSource> Empty { get; } = new ([]);
 }
