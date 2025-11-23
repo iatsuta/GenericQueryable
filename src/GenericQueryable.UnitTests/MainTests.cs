@@ -1,6 +1,4 @@
-﻿using GenericQueryable.Fetching;
-
-namespace GenericQueryable.UnitTests;
+﻿namespace GenericQueryable.UnitTests;
 
 public class MainTests
 {

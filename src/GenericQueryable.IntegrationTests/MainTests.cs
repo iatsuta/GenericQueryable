@@ -1,5 +1,4 @@
 ﻿using GenericQueryable.EntityFramework;
-using GenericQueryable.Fetching;
 using GenericQueryable.IntegrationTests.Domain;
 
 using Microsoft.EntityFrameworkCore;

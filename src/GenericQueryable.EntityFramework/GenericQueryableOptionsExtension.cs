@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using GenericQueryable.Fetching;
+using GenericQueryable.Services;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -16,9 +18,13 @@ public class GenericQueryableOptionsExtension : IDbContextOptionsExtension
 
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddSingleton<IGenericQueryableExecutor, EfGenericQueryableExecutor>();
+        services.AddSingleton<IGenericQueryableExecutor, GenericQueryableExecutor>();
+        services.AddSingleton<IMethodRedirector, MethodRedirector>();
 
-        services.Replace(ServiceDescriptor.Scoped<IAsyncQueryProvider, VisitedEfQueryProvider>());
+        services.AddSingleton<ITargetMethodExtractor, EfTargetMethodExtractor>();
+        services.AddSingleton<IFetchService, EfFetchService>();
+
+		services.Replace(ServiceDescriptor.Scoped<IAsyncQueryProvider, VisitedEfQueryProvider>());
     }
 
     public void Validate(IDbContextOptions options)

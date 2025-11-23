@@ -1,6 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using GenericQueryable.Fetching;
 
-namespace GenericQueryable.Fetching;
+using System.Linq.Expressions;
+
+namespace GenericQueryable;
 
 public static class PropertyFetchRuleExtensions
 {

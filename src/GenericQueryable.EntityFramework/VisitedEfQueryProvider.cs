@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+﻿using GenericQueryable.Services;
+
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace GenericQueryable.EntityFramework;
 
