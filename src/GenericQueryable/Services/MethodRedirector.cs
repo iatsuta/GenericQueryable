@@ -1,26 +1,31 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
 
 namespace GenericQueryable.Services;
 
 public class MethodRedirector(ITargetMethodExtractor targetMethodExtractor) : IMethodRedirector
 {
-	public Expression<Func<Task<TResult>>> Redirect<TResult>(Expression<Func<Task<TResult>>> callExpression)
+	public Expression<Func<Task<TResult>>>? TryRedirect<TResult>(Expression<Func<Task<TResult>>> callExpression)
 	{
 		if (callExpression.Body is MethodCallExpression methodCallExpression)
 		{
-			var targetMethod = targetMethodExtractor.GetTargetMethod(methodCallExpression.Method);
+			var targetMethod = targetMethodExtractor.TryGetTargetMethod(methodCallExpression.Method);
 
-			var args = methodCallExpression.Arguments.Take(targetMethod.GetParameters().Length);
+			if (targetMethod != null)
+			{
+				var args = methodCallExpression.Arguments.Take(targetMethod.GetParameters().Length);
 
-			var callExpr = this.PostCallExpression(Expression.Call(targetMethod, args));
+				var newCallExpression = this.CreateCallExpression(targetMethod, args);
 
-			return Expression.Lambda<Func<Task<TResult>>>(callExpr);
+				return Expression.Lambda<Func<Task<TResult>>>(newCallExpression);
+			}
 		}
-		else
-		{
-			throw new ArgumentOutOfRangeException(nameof(callExpression));
-		}
+
+		return null;
 	}
 
-	protected virtual Expression PostCallExpression(Expression callExpression) => callExpression;
+	protected virtual Expression CreateCallExpression(MethodInfo targetMethod, IEnumerable<Expression> args)
+	{
+		return Expression.Call(targetMethod, args);
+	}
 }

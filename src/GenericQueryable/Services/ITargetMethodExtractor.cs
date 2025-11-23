@@ -4,5 +4,5 @@ namespace GenericQueryable.Services;
 
 public interface ITargetMethodExtractor
 {
-	MethodInfo GetTargetMethod(MethodInfo baseMethod);
+	MethodInfo? TryGetTargetMethod(MethodInfo baseMethod);
 }
