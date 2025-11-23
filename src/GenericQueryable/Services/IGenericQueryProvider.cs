@@ -1,4 +1,4 @@
-﻿namespace GenericQueryable;
+﻿namespace GenericQueryable.Services;
 
 public interface IGenericQueryProvider : IQueryProvider
 {
