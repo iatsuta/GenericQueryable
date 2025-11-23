@@ -5,25 +5,32 @@ using CommonFramework.DictionaryCache;
 
 namespace GenericQueryable.Services;
 
-public abstract class TargetMethodExtractor : ITargetMethodExtractor
+public class TargetMethodExtractor : ITargetMethodExtractor
 {
-	private readonly IDictionaryCache<MethodInfo, MethodInfo> mappingMethodCache;
+	private readonly IReadOnlyList<Type> extensionsTypes;
 
-	protected TargetMethodExtractor() =>
-		this.mappingMethodCache = new DictionaryCache<MethodInfo, MethodInfo>(this.GetInternalTargetMethod).WithLock();
+	private readonly IDictionaryCache<MethodInfo, MethodInfo?> mappingMethodCache;
 
-	protected abstract IReadOnlyList<Type> ExtensionsTypes { get; }
+	protected TargetMethodExtractor(IReadOnlyList<Type> extensionsTypes)
+	{
+		this.extensionsTypes = extensionsTypes;
 
-	public MethodInfo GetTargetMethod(MethodInfo baseMethod)
+		this.mappingMethodCache = new DictionaryCache<MethodInfo, MethodInfo?>(this.GetInternalTargetMethod).WithLock();
+	}
+
+	public MethodInfo? TryGetTargetMethod(MethodInfo baseMethod)
 	{
 		return this.mappingMethodCache[baseMethod];
 	}
 
-	protected virtual string GetTargetMethodName(MethodInfo baseMethod) => baseMethod.Name.Skip("Generic", true);
-
-	protected virtual int GetParameterCount(MethodInfo baseMethod)
+	protected virtual string GetTargetMethodName(MethodInfo baseMethod)
 	{
-		return baseMethod.GetParameters().Length;
+		return baseMethod.Name.Skip("Generic", true);
+	}
+
+	protected virtual IEnumerable<Type> GetExpectedParameterTypes(MethodInfo baseMethod)
+	{
+		return baseMethod.GetParameters().Select(p => p.ParameterType);
 	}
 
 	protected virtual IEnumerable<Type> GetTargetMethodParameterTypes(MethodInfo targetMethod)
@@ -31,17 +38,17 @@ public abstract class TargetMethodExtractor : ITargetMethodExtractor
 		return targetMethod.GetParameters().Select(p => p.ParameterType);
 	}
 
-	private MethodInfo GetInternalTargetMethod(MethodInfo baseMethod)
+	private MethodInfo? GetInternalTargetMethod(MethodInfo baseMethod)
 	{
 		var targetMethodName = this.GetTargetMethodName(baseMethod);
 
 		var genericArgs = baseMethod.GetGenericArguments();
 
-		var parameterTypes = baseMethod.GetParameters().Take(this.GetParameterCount(baseMethod)).Select(p => p.ParameterType).ToArray();
+		var expectedParameterTypes = this.GetExpectedParameterTypes(baseMethod).ToList();
 
 		var request =
 
-			from extensionsType in this.ExtensionsTypes
+			from extensionsType in extensionsTypes
 
 			from method in extensionsType.GetMethods(BindingFlags.Public | BindingFlags.Static)
 
@@ -49,10 +56,10 @@ public abstract class TargetMethodExtractor : ITargetMethodExtractor
 
 			let targetMethod = method.IsGenericMethodDefinition ? method.MakeGenericMethod(genericArgs) : method
 
-			where this.GetTargetMethodParameterTypes(targetMethod).SequenceEqual(parameterTypes)
+			where expectedParameterTypes.SequenceEqual(this.GetTargetMethodParameterTypes(targetMethod))
 
 			select targetMethod;
 
-		return request.Single();
+		return request.SingleOrDefault();
 	}
 }
