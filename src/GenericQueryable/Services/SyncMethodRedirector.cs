@@ -18,4 +18,6 @@ public class SyncMethodRedirector(ITargetMethodExtractor targetMethodExtractor) 
 	{
 		return Expression.Call(TaskFromResultMethod.MakeGenericMethod(callExpression.Type), callExpression);
 	}
+
+	public static SyncMethodRedirector Queryable { get; } = new (SyncTargetMethodExtractor.Queryable);
 }
