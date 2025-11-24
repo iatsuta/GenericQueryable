@@ -4,7 +4,7 @@ using CommonFramework;
 
 namespace GenericQueryable.Services;
 
-public class AsyncEnumerableMethodExtractor() : TargetMethodExtractor([typeof(AsyncEnumerable)])
+public class AsyncEnumerableMethodExtractor(IReadOnlyList<Type> extensionsTypes) : TargetMethodExtractor(extensionsTypes)
 {
 	protected override IEnumerable<Type> GetTargetMethodParameterTypes(MethodInfo targetMethod)
 	{
@@ -15,4 +15,6 @@ public class AsyncEnumerableMethodExtractor() : TargetMethodExtractor([typeof(As
 
 		return new[] { typeof(IQueryable<>).MakeGenericType(sourceType) }.Concat(baseTypes.Skip(1));
 	}
+
+	public static AsyncEnumerableMethodExtractor Default { get; } = new([typeof(AsyncEnumerable)]);
 }

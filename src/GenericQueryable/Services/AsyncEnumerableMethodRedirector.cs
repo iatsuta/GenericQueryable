@@ -33,4 +33,6 @@ public class AsyncEnumerableMethodRedirector(ITargetMethodExtractor targetMethod
 
 		return Expression.Call(callExpression, asTaskMethod);
 	}
+
+	public static AsyncEnumerableMethodRedirector Default { get; } = new(AsyncEnumerableMethodExtractor.Default);
 }

@@ -12,29 +12,25 @@ public class GenericQueryableExecutor(IEnumerable<IMethodRedirector> methodRedir
 
 	public IFetchService FetchService { get; } = fetchService;
 
-	public async Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> expression)
+	public async Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> callExpression)
 	{
 		var redirectedExpressionRequest =
 
 			from methodRedirector in methodRedirectors
 
-			let result = methodRedirector.TryRedirect(expression)
+			let result = methodRedirector.TryRedirect(callExpression)
 
 			where result != null
 
 			select result;
 
-		var redirectedExpression = redirectedExpressionRequest.FirstOrDefault() ??
-		                           throw new ArgumentOutOfRangeException(nameof(expression), "Expression can't be redirected");
+		var redirectedExpression = redirectedExpressionRequest.FirstOrDefault()
+		                           ?? throw new ArgumentOutOfRangeException(nameof(callExpression), "Expression can't be redirected");
 
 		return await lambdaCompileCache.GetFunc(redirectedExpression).Invoke();
 	}
 
 	public static IGenericQueryableExecutor Sync { get; } =
-		new GenericQueryableExecutor(
-			[
-				new SyncMethodRedirector(SyncTargetMethodExtractor.Queryable),
-				new AsyncEnumerableMethodRedirector(new AsyncEnumerableMethodExtractor())
-			],
-			new IgnoreFetchService());
+
+		new GenericQueryableExecutor([SyncMethodRedirector.Queryable, AsyncEnumerableMethodRedirector.Default], new IgnoreFetchService());
 }

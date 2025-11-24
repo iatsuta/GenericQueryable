@@ -12,7 +12,7 @@ namespace GenericQueryable.EntityFramework;
 
 public class EfFetchService : IFetchService
 {
-	public IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
+	public virtual IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
 		where TSource : class
 	{
 		return fetchRule switch
