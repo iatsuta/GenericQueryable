@@ -40,7 +40,11 @@ public class MainTests
 		await dbContext.SaveChangesAsync(ct);
 
 		// Act
-		var result = await testSet
+		var result0 = await testSet
+			.WithFetch(r => r.Fetch(v => v.DeepFetchObjects).ThenFetch(v => v.FetchObject))
+			.GenericToArrayAsync(cancellationToken: ct);
+
+		var result1 = await testSet
 			.WithFetch(r => r.Fetch(v => v.DeepFetchObjects).ThenFetch(v => v.FetchObject))
 			.GenericToListAsync(cancellationToken: ct);
 
@@ -57,6 +61,6 @@ public class MainTests
 			.GenericToDictionaryAsync(v => v.Id, v => v, cancellationToken: ct);
 
 		//Assert
-		result.Should().Contain(testObj);
+		result0.Should().Contain(testObj);
 	}
 }

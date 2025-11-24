@@ -14,9 +14,23 @@ public class MainTests
 
         //Assert
         result.Should().Be(baseSource.Sum());
-    }
+	}
 
     [Fact]
+    public async Task DefaultGenericQueryable_InvokeToArrayAsync_MethodInvoked()
+    {
+	    // Arrange
+	    var baseSource = new[] { 1, 2, 3 };
+	    var qSource = baseSource.AsQueryable();
+
+	    // Act
+	    var result = await qSource.GenericToArrayAsync();
+
+	    //Assert
+	    result.Should().BeEquivalentTo(baseSource);
+    }
+
+	[Fact]
     public async Task DefaultGenericQueryable_InvokeToListAsync_MethodInvoked()
     {
         // Arrange
