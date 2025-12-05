@@ -8,12 +8,12 @@ namespace GenericQueryable.IntegrationTests;
 
 public class MainTests
 {
+	private readonly CancellationToken ct = TestContext.Current.CancellationToken;
+
 	[Fact]
 	public async Task DefaultGenericQueryable_InvokeToListAsync_MethodInvoked()
 	{
 		// Arrange
-		var ct = CancellationToken.None;
-
 		var sp = new ServiceCollection()
 			.AddDbContext<TestDbContext>(optionsBuilder => optionsBuilder
 					.UseSqlite("Data Source=test.db")
