@@ -20,14 +20,16 @@ public class GenericQueryableSetup : IGenericQueryableSetup
 		services.AddSingleton(typeof(ITargetMethodExtractor), this.targetMethodExtractorType);
 	}
 
-	public IGenericQueryableSetup SetFetchService<TFetchService>() where TFetchService : IFetchService
+	public IGenericQueryableSetup SetFetchService<TFetchService>()
+        where TFetchService : IFetchService
 	{
 		this.fetchServiceType = typeof(TFetchService);
 
 		return this;
 	}
 
-	public IGenericQueryableSetup SetTargetMethodExtractor<TTargetMethodExtractor>() where TTargetMethodExtractor : ITargetMethodExtractor
+	public IGenericQueryableSetup SetTargetMethodExtractor<TTargetMethodExtractor>()
+        where TTargetMethodExtractor : ITargetMethodExtractor
 	{
 		this.targetMethodExtractorType = typeof(TTargetMethodExtractor);
 

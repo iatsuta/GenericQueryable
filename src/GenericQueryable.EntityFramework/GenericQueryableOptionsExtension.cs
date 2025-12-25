@@ -1,9 +1,10 @@
-﻿using GenericQueryable.DependencyInjection;
+﻿using CommonFramework.DependencyInjection;
+
+using GenericQueryable.DependencyInjection;
 
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace GenericQueryable.EntityFramework;
 
@@ -20,8 +21,8 @@ public class GenericQueryableOptionsExtension : IDbContextOptionsExtension
 	{
 		services.AddGenericQueryable(v => v.SetFetchService<EfFetchService>().SetTargetMethodExtractor<EfTargetMethodExtractor>());
 
-		services.Replace(ServiceDescriptor.Scoped<IAsyncQueryProvider, VisitedEfQueryProvider>());
-	}
+        services.ReplaceScoped<IAsyncQueryProvider, VisitedEfQueryProvider>();
+    }
 
 	public void Validate(IDbContextOptions options)
 	{
