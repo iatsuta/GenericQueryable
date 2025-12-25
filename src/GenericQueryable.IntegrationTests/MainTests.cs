@@ -1,4 +1,5 @@
 ﻿using CommonFramework.DependencyInjection;
+
 using GenericQueryable.EntityFramework;
 using GenericQueryable.IntegrationTests.Domain;
 
