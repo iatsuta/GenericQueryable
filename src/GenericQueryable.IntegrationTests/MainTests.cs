@@ -1,4 +1,5 @@
-﻿using GenericQueryable.EntityFramework;
+﻿using CommonFramework.DependencyInjection;
+using GenericQueryable.EntityFramework;
 using GenericQueryable.IntegrationTests.Domain;
 
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,8 @@ public class MainTests
 					.UseGenericQueryable(),
 				contextLifetime: ServiceLifetime.Singleton,
 				optionsLifetime: ServiceLifetime.Singleton)
+            .AddValidator<DuplicateServiceUsageValidator>()
+            .Validate()
 			.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
 
 		var dbContext = sp.GetRequiredService<TestDbContext>();
