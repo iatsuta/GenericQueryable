@@ -10,12 +10,14 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace GenericQueryable.EntityFramework;
 
-public class EfFetchService : IFetchService
+public class EfFetchService(IEnumerable<IFetchRuleExpander> expanders) : IFetchService
 {
 	public virtual IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
 		where TSource : class
-	{
-		return fetchRule switch
+    {
+        var expandedFetchRule = expanders.Aggregate(fetchRule, (state, expander) => expander.TryExpand(state) ?? state);
+
+        return expandedFetchRule switch
 		{
 			UntypedFetchRule<TSource> untypedFetchRule => source.Include(untypedFetchRule.Path),
 

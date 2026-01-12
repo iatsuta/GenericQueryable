@@ -8,6 +8,11 @@ public interface IGenericQueryableSetup
 	IGenericQueryableSetup SetFetchService<TFetchService>()
 		where TFetchService : IFetchService;
 
-	IGenericQueryableSetup SetTargetMethodExtractor<TTargetMethodExtractor>()
+    IGenericQueryableSetup AddFetchRuleExpander<TFetchRuleExpander>()
+        where TFetchRuleExpander : IFetchRuleExpander;
+
+    IGenericQueryableSetup AddFetchRule<TSource>(FetchRule<TSource> header, FetchRule<TSource> implementation);
+
+    IGenericQueryableSetup SetTargetMethodExtractor<TTargetMethodExtractor>()
 		where TTargetMethodExtractor : ITargetMethodExtractor;
 }

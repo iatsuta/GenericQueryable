@@ -10,16 +10,24 @@ namespace GenericQueryable.EntityFramework;
 
 public class GenericQueryableOptionsExtension : IDbContextOptionsExtension
 {
-	public GenericQueryableOptionsExtension()
-	{
-		this.Info = new ExtensionInfo(this);
-	}
+    private readonly Action<IGenericQueryableSetup>? setupAction;
+
+    public GenericQueryableOptionsExtension(Action<IGenericQueryableSetup>? setupAction)
+    {
+        this.setupAction = setupAction;
+        this.Info = new ExtensionInfo(this);
+    }
 
 	public DbContextOptionsExtensionInfo Info { get; }
 
 	public void ApplyServices(IServiceCollection services)
 	{
-		services.AddGenericQueryable(v => v.SetFetchService<EfFetchService>().SetTargetMethodExtractor<EfTargetMethodExtractor>());
+		services.AddGenericQueryable(v =>
+        {
+            v.SetFetchService<EfFetchService>().SetTargetMethodExtractor<EfTargetMethodExtractor>();
+
+			setupAction?.Invoke(v);
+        });
 
         services.ReplaceScoped<IAsyncQueryProvider, VisitedEfQueryProvider>();
     }
