@@ -7,27 +7,28 @@ using GenericQueryable.Fetching;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GenericQueryable.EntityFramework;
 
-public class EfFetchService(IEnumerable<IFetchRuleExpander> expanders) : IFetchService
+public class EfFetchService([FromKeyedServices(RootFetchRuleExpander.Key)] IFetchRuleExpander fetchRuleExpander) : IFetchService
 {
-	public virtual IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
-		where TSource : class
+    public virtual IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
+        where TSource : class
     {
-        var expandedFetchRule = expanders.Aggregate(fetchRule, (state, expander) => expander.TryExpand(state) ?? state);
+        var expandedFetchRule = fetchRuleExpander.TryExpand(fetchRule) ?? fetchRule;
 
         return expandedFetchRule switch
-		{
-			UntypedFetchRule<TSource> untypedFetchRule => source.Include(untypedFetchRule.Path),
+        {
+            UntypedFetchRule<TSource> untypedFetchRule => source.Include(untypedFetchRule.Path),
 
-			PropertyFetchRule<TSource> propertyFetchRule => this.ApplyFetch(source, propertyFetchRule),
+            PropertyFetchRule<TSource> propertyFetchRule => this.ApplyFetch(source, propertyFetchRule),
 
-			_ => throw new ArgumentOutOfRangeException(nameof(fetchRule))
-		};
-	}
+            _ => throw new ArgumentOutOfRangeException(nameof(fetchRule))
+        };
+    }
 
-	protected IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, PropertyFetchRule<TSource> fetchRule)
+    protected IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, PropertyFetchRule<TSource> fetchRule)
 		where TSource : class
 	{
 		return fetchRule.Paths.Aggregate(source, this.ApplyFetch);

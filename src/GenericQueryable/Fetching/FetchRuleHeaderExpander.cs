@@ -11,17 +11,24 @@ public class FetchRuleHeaderExpander(IEnumerable<FetchRuleHeaderInfo> fetchRuleH
 
     private readonly ConcurrentDictionary<Type, object> cache = new();
 
-    public FetchRule<TSource>? TryExpand<TSource>(FetchRule<TSource> fetchRule)
+    public PropertyFetchRule<TSource>? TryExpand<TSource>(FetchRule<TSource> fetchRule)
     {
-        return cache.GetOrAdd(typeof(TSource),
-                _ => headersDict
-                    .GetValueOrDefault(typeof(TSource))
-                    .EmptyIfNull()
-                    .Cast<FetchRuleHeaderInfo<TSource>>()
-                    .ToDictionary(info => info.Header, info => info.Implementation))
+        if (fetchRule is FetchRuleHeader<TSource> fetchRuleHeader)
+        {
+            return cache.GetOrAdd(typeof(TSource),
+                    _ => headersDict
+                        .GetValueOrDefault(typeof(TSource))
+                        .EmptyIfNull()
+                        .Cast<FetchRuleHeaderInfo<TSource>>()
+                        .ToDictionary(info => info.Header, info => info.Implementation))
 
-            .Pipe(innerCache => (IReadOnlyDictionary<FetchRule<TSource>, FetchRule<TSource>>)innerCache)
+                .Pipe(innerCache => (IReadOnlyDictionary<FetchRuleHeader<TSource>, PropertyFetchRule<TSource>>)innerCache)
 
-            .Pipe(innerCache => innerCache.GetValueOrDefault(fetchRule));
+                .Pipe(innerCache => innerCache.GetValueOrDefault(fetchRuleHeader));
+        }
+        else
+        {
+            return null;
+        }
     }
 }
