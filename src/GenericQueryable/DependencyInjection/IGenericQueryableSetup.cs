@@ -11,7 +11,7 @@ public interface IGenericQueryableSetup
     IGenericQueryableSetup AddFetchRuleExpander<TFetchRuleExpander>()
         where TFetchRuleExpander : IFetchRuleExpander;
 
-    IGenericQueryableSetup AddFetchRule<TSource>(FetchRule<TSource> header, FetchRule<TSource> implementation);
+    IGenericQueryableSetup AddFetchRule<TSource>(FetchRuleHeader<TSource> header, PropertyFetchRule<TSource> implementation);
 
     IGenericQueryableSetup SetTargetMethodExtractor<TTargetMethodExtractor>()
 		where TTargetMethodExtractor : ITargetMethodExtractor;

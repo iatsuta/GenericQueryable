@@ -1,3 +1,5 @@
 ﻿namespace GenericQueryable.Fetching;
 
-public record FetchRuleHeader<TSource>(string Name) : FetchRule<TSource>;
+public abstract record FetchRuleHeader<TSource> : FetchRule<TSource>;
+
+public record FetchRuleHeader<TSource, TValue>(TValue Value) : FetchRuleHeader<TSource>;

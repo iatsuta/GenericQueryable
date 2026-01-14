@@ -23,6 +23,8 @@ public class GenericQueryableSetup : IGenericQueryableSetup
         services.AddSingleton(typeof(IFetchService), this.fetchServiceType);
         services.AddSingleton(typeof(ITargetMethodExtractor), this.targetMethodExtractorType);
 
+        services.AddKeyedSingleton<IFetchRuleExpander, RootFetchRuleExpander>(RootFetchRuleExpander.Key);
+
         foreach (var fetchRuleExpanderType in this.fetchRuleExpanderTypeList)
         {
             services.AddSingleton(typeof(IFetchRuleExpander), fetchRuleExpanderType);
@@ -42,7 +44,7 @@ public class GenericQueryableSetup : IGenericQueryableSetup
         return this;
     }
 
-    public IGenericQueryableSetup AddFetchRule<TSource>(FetchRule<TSource> header, FetchRule<TSource> implementation)
+    public IGenericQueryableSetup AddFetchRule<TSource>(FetchRuleHeader<TSource> header, PropertyFetchRule<TSource> implementation)
     {
         this.fetchRuleHeaderInfoList.Add(new FetchRuleHeaderInfo<TSource>(header, implementation));
 

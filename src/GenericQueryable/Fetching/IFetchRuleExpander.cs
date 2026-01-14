@@ -2,5 +2,5 @@
 
 public interface IFetchRuleExpander
 {
-    FetchRule<TSource>? TryExpand<TSource>(FetchRule<TSource> fetchRule);
+    PropertyFetchRule<TSource>? TryExpand<TSource>(FetchRule<TSource> fetchRule);
 }
