@@ -8,6 +8,7 @@
   <Project Path="GenericQueryable.IntegrationTests/GenericQueryable.IntegrationTests.csproj" />
   <Project Path="GenericQueryable.UnitTests/GenericQueryable.UnitTests.csproj" />
   <Project Path="GenericQueryable/GenericQueryable.csproj" />
+  <Project Path="GenericQueryable.Abstractions/GenericQueryable.Abstractions.csproj" />
   <Project Path="GenericQueryable.EntityFramework/GenericQueryable.EntityFramework.csproj" />
   
 </Solution>

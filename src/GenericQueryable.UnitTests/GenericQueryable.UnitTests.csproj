@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GenericQueryable\GenericQueryable.csproj" />
+    <ProjectReference Include="..\GenericQueryable.Abstractions\GenericQueryable.Abstractions.csproj" />
   </ItemGroup>
 
 
