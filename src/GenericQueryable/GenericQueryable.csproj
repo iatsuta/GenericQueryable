@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GenericQueryable.Abstractions\GenericQueryable.Abstractions.csproj" />
+    <ProjectReference Include="..\GenericQueryable.Runtime\GenericQueryable.Runtime.csproj" />
   </ItemGroup>
 
 </Project>

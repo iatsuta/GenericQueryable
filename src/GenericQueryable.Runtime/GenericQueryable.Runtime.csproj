@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IvAt.GenericQueryable.Runtime</PackageId>
+    <RootNamespace>GenericQueryable</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GenericQueryable.Abstractions\GenericQueryable.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

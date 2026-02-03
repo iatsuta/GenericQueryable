@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GenericQueryable.EntityFramework\GenericQueryable.EntityFramework.csproj" />
-    <ProjectReference Include="..\GenericQueryable\GenericQueryable.csproj" />
   </ItemGroup>
 
 
