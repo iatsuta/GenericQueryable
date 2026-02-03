@@ -6,6 +6,7 @@
     <File Path="__SolutionItems/CommonAssemblyInfo.cs" />
   </Folder>
   <Project Path="GenericQueryable.IntegrationTests/GenericQueryable.IntegrationTests.csproj" />
+  <Project Path="GenericQueryable.Runtime/GenericQueryable.Runtime.csproj" />
   <Project Path="GenericQueryable.UnitTests/GenericQueryable.UnitTests.csproj" />
   <Project Path="GenericQueryable/GenericQueryable.csproj" />
   <Project Path="GenericQueryable.Abstractions/GenericQueryable.Abstractions.csproj" />
