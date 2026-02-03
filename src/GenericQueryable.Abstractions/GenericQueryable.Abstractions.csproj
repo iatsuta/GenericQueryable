@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IvAt.GenericQueryable.Abstractions</PackageId>
+    <RootNamespace>GenericQueryable</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IvAt.CommonFramework" />
+  </ItemGroup>
+
+</Project>
