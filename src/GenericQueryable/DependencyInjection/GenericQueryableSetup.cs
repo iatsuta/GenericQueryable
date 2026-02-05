@@ -20,7 +20,7 @@ public class GenericQueryableSetup : IGenericQueryableSetup
 
     public void Initialize(IServiceCollection services)
     {
-        if (!services.AlreadyInitialized<IFetchRuleExpander>())
+        if (!services.AlreadyInitialized<IGenericQueryableExecutor>())
         {
             services.TryAddSingleton<IGenericQueryableExecutor, GenericQueryableExecutor>();
             services.TryAddSingleton<IMethodRedirector, MethodRedirector>();
