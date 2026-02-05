@@ -20,8 +20,9 @@ public class MainTests
         var sp = new ServiceCollection()
             .AddDbContext<TestDbContext>(optionsBuilder => optionsBuilder
                     .UseSqlite("Data Source=test.db")
-                    .UseGenericQueryable(b =>
-                        b.AddFetchRule(AppFetchRule.TestFetchRule, FetchRule<TestObject>.Create(v => v.DeepFetchObjects).ThenFetch(v => v.FetchObject))),
+                    .UseGenericQueryable(b => b
+                        .AddFetchRuleExpander<AppFetchRuleExpander>()
+                        .AddFetchRule(AppFetchRule.TestFetchRule, FetchRule<TestObject>.Create(v => v.DeepFetchObjects).ThenFetch(v => v.FetchObject))),
                 contextLifetime: ServiceLifetime.Singleton,
                 optionsLifetime: ServiceLifetime.Singleton)
             .AddValidator<DuplicateServiceUsageValidator>()
