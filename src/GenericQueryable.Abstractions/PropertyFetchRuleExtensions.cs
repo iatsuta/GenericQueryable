@@ -2,6 +2,8 @@
 
 using System.Linq.Expressions;
 
+using CommonFramework;
+
 namespace GenericQueryable;
 
 public static class PropertyFetchRuleExtensions
@@ -29,7 +31,7 @@ public static class PropertyFetchRuleExtensions
 
         var lastPath = fetchRule.Paths.Last();
 
-        var newLastPath = new FetchPath(lastPath.Properties.Concat([prop]).ToList());
+        var newLastPath = new LambdaExpressionPath(lastPath.Properties.Concat([prop]).ToList());
 
         return new PropertyFetchRule<TSource, TNextProperty>(prevPaths.Concat([newLastPath]).ToList());
     }

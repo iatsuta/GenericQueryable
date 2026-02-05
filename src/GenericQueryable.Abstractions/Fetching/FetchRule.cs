@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
 
+using CommonFramework;
+
 namespace GenericQueryable.Fetching;
 
 public abstract record FetchRule<TSource>
@@ -11,8 +13,8 @@ public abstract record FetchRule<TSource>
 
     public static PropertyFetchRule<TSource, TProperty> Create<TProperty>(Expression<Func<TSource, TProperty>> prop)
     {
-        return new PropertyFetchRule<TSource, TProperty>([new FetchPath([prop])]);
+        return new PropertyFetchRule<TSource, TProperty>([new LambdaExpressionPath([prop])]);
     }
 
-    public static PropertyFetchRule<TSource> Empty { get; } = new ([]);
+    public static PropertyFetchRule<TSource> Empty { get; } = new([]);
 }
