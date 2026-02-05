@@ -1,8 +1,9 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using System.Reflection;
 
 using CommonFramework;
-
+using CommonFramework.ExpressionEvaluate;
 using GenericQueryable.Fetching;
 
 using Microsoft.EntityFrameworkCore;
@@ -13,48 +14,73 @@ namespace GenericQueryable.EntityFramework;
 
 public class EfFetchService([FromKeyedServices(RootFetchRuleExpander.Key)] IFetchRuleExpander fetchRuleExpander) : IFetchService
 {
+    private readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, object>> rootCache = [];
+
     public virtual IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
         where TSource : class
     {
-        var expandedFetchRule = fetchRuleExpander.TryExpand(fetchRule) ?? fetchRule;
-
-        return expandedFetchRule switch
+        return fetchRule switch
         {
             UntypedFetchRule<TSource> untypedFetchRule => source.Include(untypedFetchRule.Path),
 
-            PropertyFetchRule<TSource> propertyFetchRule => this.ApplyFetch(source, propertyFetchRule),
-
-            _ => throw new ArgumentOutOfRangeException(nameof(fetchRule))
+            _ => this.GetApplyFetchFunc(fetchRule).Invoke(source)
         };
     }
 
-    protected IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, PropertyFetchRule<TSource> fetchRule)
-		where TSource : class
-	{
-		return fetchRule.Paths.Aggregate(source, this.ApplyFetch);
-	}
+    private Func<IQueryable<TSource>, IQueryable<TSource>> GetApplyFetchFunc<TSource>(FetchRule<TSource> fetchRule)
+        where TSource : class
+    {
+        return this.rootCache
+            .GetOrAdd(typeof(TSource), _ => new ConcurrentDictionary<Type, object>())
+            .GetOrAdd(fetchRule.GetType(), _ => new ConcurrentDictionary<FetchRule<TSource>, Func<IQueryable<TSource>, IQueryable<TSource>>>())
+            .Pipe(v => (ConcurrentDictionary<FetchRule<TSource>, Func<IQueryable<TSource>, IQueryable<TSource>>>)v)
+            .GetOrAdd(fetchRule, _ =>
+            {
+                var fetchExpr = this.GetApplyFetchExpression(fetchRuleExpander.Expand(fetchRule));
 
-	private IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchPath fetchPath)
-		where TSource : class
-	{
-		return fetchPath
-			.Properties
-			.ZipStrong(new LambdaExpression?[] { null }.Concat(fetchPath.Properties.SkipLast(1)), (prop, prevProp) => new { prop, prevProp })
-			.Aggregate(source, (q, pair) => this.ApplyFetch(q, pair.prop, pair.prevProp));
-	}
+                return fetchExpr.Compile();
+            });
+    }
 
-	private IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, LambdaExpression prop, LambdaExpression? prevProp)
-		where TSource : class
-	{
-		return this.GetFetchMethod<TSource>(prop, prevProp).Invoke<IQueryable<TSource>>(this, source, prop);
-	}
+    private Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> GetApplyFetchExpression<TSource>(PropertyFetchRule<TSource> fetchRule)
+        where TSource : class
+    {
+        var startState = ExpressionHelper.GetIdentity<IQueryable<TSource>>();
 
-	private MethodInfo GetFetchMethod<TSource>(LambdaExpression prop, LambdaExpression? prevProp)
+        return fetchRule.Paths.Aggregate(startState, (state, path) =>
+        {
+            var nextApplyFunc = GetApplyFetchExpression<TSource>(path);
+
+            return ExpressionEvaluateHelper.InlineEvaluate<Func<IQueryable<TSource>, IQueryable<TSource>>>(ee =>
+
+                q => ee.Evaluate(nextApplyFunc, ee.Evaluate(state, q)));
+        });
+    }
+
+    private static Expression<Func<IQueryable<TSource>, IQueryable<TSource>>> GetApplyFetchExpression<TSource>(LambdaExpressionPath fetchPath)
+        where TSource : class
+    {
+        LambdaExpression startState = ExpressionHelper.GetIdentity<IQueryable<TSource>>();
+
+        var resultBody = fetchPath
+            .Properties
+            .ZipStrong(new LambdaExpression?[] { null }.Concat(fetchPath.Properties.SkipLast(1)), (prop, prevProp) => new { prop, prevProp })
+            .Aggregate(startState.Body, (state, pair) =>
+            {
+                var fetchMethod = GetFetchMethod<TSource>(pair.prop, pair.prevProp);
+
+                return Expression.Call(fetchMethod, state, pair.prop);
+            });
+
+        return Expression.Lambda<Func<IQueryable<TSource>, IQueryable<TSource>>>(resultBody, startState.Parameters);
+    }
+
+    private static MethodInfo GetFetchMethod<TSource>(LambdaExpression prop, LambdaExpression? prevProp)
 		where TSource : class
 	{
 		if (prevProp == null)
 		{
-			return new Func<IQueryable<TSource>, Expression<Func<TSource, Ignore>>, IIncludableQueryable<TSource, Ignore>>(this.ApplyFetch)
+			return new Func<IQueryable<TSource>, Expression<Func<TSource, Ignore>>, IIncludableQueryable<TSource, Ignore>>(EntityFrameworkQueryableExtensions.Include)
 				.CreateGenericMethod(typeof(TSource), prop.Body.Type);
 		}
 		else
@@ -68,35 +94,15 @@ public class EfFetchService([FromKeyedServices(RootFetchRuleExpander.Key)] IFetc
 			if (prevPropRealType.IsGenericType && typeof(IEnumerable<>).MakeGenericType(prevElementType).IsAssignableFrom(prevPropRealType))
 			{
 				return new Func<IIncludableQueryable<TSource, IEnumerable<Ignore>>, Expression<Func<Ignore, Ignore>>, IIncludableQueryable<TSource, Ignore>>(
-						this.ApplyThenFetch)
+                        EntityFrameworkQueryableExtensions.ThenInclude)
 					.CreateGenericMethod(typeof(TSource), prevElementType, nextPropertyType);
 			}
 			else
 			{
 				return new Func<IIncludableQueryable<TSource, Ignore>, Expression<Func<Ignore, Ignore>>, IIncludableQueryable<TSource, Ignore>>(
-						this.ApplyThenFetch)
+                        EntityFrameworkQueryableExtensions.ThenInclude)
 					.CreateGenericMethod(typeof(TSource), prevElementType, nextPropertyType);
 			}
 		}
-	}
-
-	private IIncludableQueryable<TSource, TProperty> ApplyFetch<TSource, TProperty>(IQueryable<TSource> source, Expression<Func<TSource, TProperty>> prop)
-		where TSource : class
-	{
-		return source.Include(prop);
-	}
-
-	private IIncludableQueryable<TSource, TNextProperty> ApplyThenFetch<TSource, TPrevProperty, TNextProperty>(
-		IIncludableQueryable<TSource, IEnumerable<TPrevProperty>> source, Expression<Func<TPrevProperty, TNextProperty>> prop)
-		where TSource : class
-	{
-		return source.ThenInclude(prop);
-	}
-
-	private IIncludableQueryable<TSource, TNextProperty> ApplyThenFetch<TSource, TPrevProperty, TNextProperty>(
-		IIncludableQueryable<TSource, TPrevProperty> source, Expression<Func<TPrevProperty, TNextProperty>> prop)
-		where TSource : class
-	{
-		return source.ThenInclude(prop);
 	}
 }
