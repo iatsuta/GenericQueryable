@@ -11,7 +11,7 @@ namespace GenericQueryable.Fetching;
 
 public abstract class FetchService([FromKeyedServices(RootFetchRuleExpander.Key)] IFetchRuleExpander fetchRuleExpander) : IFetchService
 {
-    private readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, object>> rootCache = [];
+    private readonly ConcurrentDictionary<Type, object> rootCache = [];
 
     public virtual IQueryable<TSource> ApplyFetch<TSource>(IQueryable<TSource> source, FetchRule<TSource> fetchRule)
         where TSource : class => this.GetApplyFetchFunc(fetchRule).Invoke(source);
@@ -20,7 +20,6 @@ public abstract class FetchService([FromKeyedServices(RootFetchRuleExpander.Key)
         where TSource : class
     {
         return this.rootCache
-            .GetOrAdd(typeof(TSource), _ => new ConcurrentDictionary<Type, object>())
             .GetOrAdd(fetchRule.GetType(), _ => new ConcurrentDictionary<FetchRule<TSource>, Func<IQueryable<TSource>, IQueryable<TSource>>>())
             .Pipe(v => (ConcurrentDictionary<FetchRule<TSource>, Func<IQueryable<TSource>, IQueryable<TSource>>>)v)
             .GetOrAdd(fetchRule, _ =>
