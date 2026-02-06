@@ -1,3 +1,3 @@
 ﻿namespace GenericQueryable.Fetching;
 
-public record UntypedFetchRule<TSource>(string Path) : FetchRule<TSource>;
+public sealed record UntypedFetchRule<TSource>(string Path) : FetchRule<TSource>;
