@@ -26,6 +26,8 @@ public class GenericQueryableSetup : IGenericQueryableSetup
             services.TryAddSingleton<IMethodRedirector, MethodRedirector>();
 
             services.AddSingleton<IFetchRuleExpander, FetchRuleHeaderExpander>();
+            services.AddSingleton<IFetchRuleExpander, UntypedFetchExpander>();
+
             services.AddKeyedSingleton<IFetchRuleExpander, RootFetchRuleExpander>(RootFetchRuleExpander.Key);
         }
 
