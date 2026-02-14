@@ -5,5 +5,5 @@ namespace GenericQueryable.IntegrationTests;
 
 public static class AppFetchRule
 {
-    public static FetchRuleHeader<TestObject> TestFetchRule { get; } = new FetchRuleHeader<TestObject, string>(nameof(TestFetchRule));
+    public static FetchRuleHeader<TestObject> TestFetchRule { get; } = FetchRuleHeader<TestObject>.Create(nameof(TestFetchRule));
 }
