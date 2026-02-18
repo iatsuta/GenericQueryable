@@ -52,10 +52,12 @@ public abstract class FetchService([FromKeyedServices(RootFetchRuleExpander.Key)
 
         var resultBody = this
             .GetFetchMethods<TSource>(fetchPath).ZipStrong(fetchPath.Properties, (method, prop) => new { method, prop })
-            .Aggregate(startState.Body, (state, pair) => Expression.Call(pair.method, state, pair.prop));
+            .Aggregate(startState.Body, (state, pair) => Expression.Call(pair.method, state, this.GetFetchProperty(pair.prop)));
 
         return Expression.Lambda<Func<IQueryable<TSource>, IQueryable<TSource>>>(resultBody, startState.Parameters);
     }
+
+    protected virtual LambdaExpression GetFetchProperty(LambdaExpression prop) => prop;
 
     protected abstract IEnumerable<MethodInfo> GetFetchMethods<TSource>(LambdaExpressionPath fetchPath)
         where TSource : class;
