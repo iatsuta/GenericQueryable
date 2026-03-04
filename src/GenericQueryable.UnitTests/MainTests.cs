@@ -160,7 +160,7 @@ public class MainTests
     }
 
     [Fact]
-    public async Task Test1()
+    public async Task GenericAsAsyncEnumerable_Should_Execute()
     {
         // Arrange
         var baseSource = 1;
