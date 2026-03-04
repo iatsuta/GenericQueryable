@@ -1,4 +1,6 @@
-﻿namespace GenericQueryable.Fetching;
+﻿using GenericQueryable.Fetching;
+
+namespace GenericQueryable.Services;
 
 public class IgnoreFetchService : IFetchService
 {

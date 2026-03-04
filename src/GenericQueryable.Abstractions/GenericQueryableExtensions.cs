@@ -9,17 +9,17 @@ public static class GenericQueryableExtensions
 	extension<TSource>(IQueryable<TSource> source)
 	{
 		public Task<TSource[]> GenericToArrayAsync(CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericToArrayAsync(cancellationToken));
+			source.Execute(() => source.GenericToArrayAsync(cancellationToken));
 
 		public Task<List<TSource>> GenericToListAsync(CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericToListAsync(cancellationToken));
+			source.Execute(() => source.GenericToListAsync(cancellationToken));
 
 		public Task<HashSet<TSource>> GenericToHashSetAsync(CancellationToken cancellationToken = default) =>
 			source.GenericToHashSetAsync(null, cancellationToken);
 
 		public Task<HashSet<TSource>> GenericToHashSetAsync(IEqualityComparer<TSource>? comparer,
 			CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericToHashSetAsync(comparer, cancellationToken));
+			source.Execute(() => source.GenericToHashSetAsync(comparer, cancellationToken));
 
 		public Task<Dictionary<TKey, TSource>> GenericToDictionaryAsync<TKey>(Func<TSource, TKey> keySelector,
 			CancellationToken cancellationToken = default)
@@ -43,54 +43,56 @@ public static class GenericQueryableExtensions
 			IEqualityComparer<TKey>? comparer,
 			CancellationToken cancellationToken = default)
 			where TKey : notnull =>
-			source.ExecuteAsync(() => source.GenericToDictionaryAsync(keySelector, elementSelector, comparer, cancellationToken));
+			source.Execute(() => source.GenericToDictionaryAsync(keySelector, elementSelector, comparer, cancellationToken));
 
 		public Task<TSource> GenericSingleAsync(CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericSingleAsync(cancellationToken));
+			source.Execute(() => source.GenericSingleAsync(cancellationToken));
 
 		public Task<TSource> GenericSingleAsync(Expression<Func<TSource, bool>> filter,
 			CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericSingleAsync(filter, cancellationToken));
+			source.Execute(() => source.GenericSingleAsync(filter, cancellationToken));
 
 		public Task<TSource?> GenericSingleOrDefaultAsync(CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericSingleOrDefaultAsync(cancellationToken));
+			source.Execute(() => source.GenericSingleOrDefaultAsync(cancellationToken));
 
 		public Task<TSource?> GenericSingleOrDefaultAsync(Expression<Func<TSource, bool>> filter,
 			CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericSingleOrDefaultAsync(filter, cancellationToken));
+			source.Execute(() => source.GenericSingleOrDefaultAsync(filter, cancellationToken));
 
 		public Task<TSource> GenericFirstAsync(CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericFirstAsync(cancellationToken));
+			source.Execute(() => source.GenericFirstAsync(cancellationToken));
 
 		public Task<TSource?> GenericFirstOrDefaultAsync(CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericFirstOrDefaultAsync(cancellationToken));
+			source.Execute(() => source.GenericFirstOrDefaultAsync(cancellationToken));
 
 		public Task<int> GenericCountAsync(CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericCountAsync(cancellationToken));
+			source.Execute(() => source.GenericCountAsync(cancellationToken));
 
 		public Task<bool> GenericAllAsync(Expression<Func<TSource, bool>> filter,
 			CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericAllAsync(filter, cancellationToken));
+			source.Execute(() => source.GenericAllAsync(filter, cancellationToken));
 
 		public Task<bool> GenericAnyAsync(CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericAnyAsync(cancellationToken));
+			source.Execute(() => source.GenericAnyAsync(cancellationToken));
 
 		public Task<bool> GenericAnyAsync(Expression<Func<TSource, bool>> filter,
 			CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericAnyAsync(filter, cancellationToken));
+			source.Execute(() => source.GenericAnyAsync(filter, cancellationToken));
 
 		public Task<TSource?> GenericFirstOrDefaultAsync(Expression<Func<TSource, bool>> filter,
 			CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericFirstOrDefaultAsync(filter, cancellationToken));
+			source.Execute(() => source.GenericFirstOrDefaultAsync(filter, cancellationToken));
 
-		public Task<decimal?> GenericSumAsync(Expression<Func<TSource, decimal?>> selector,
+        public IAsyncEnumerable<TSource> GenericAsAsyncEnumerable() => source.Execute(() => source.GenericAsAsyncEnumerable());
+
+        public Task<decimal?> GenericSumAsync(Expression<Func<TSource, decimal?>> selector,
 			CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericSumAsync(selector, cancellationToken));
+			source.Execute(() => source.GenericSumAsync(selector, cancellationToken));
 
-		public Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> callExpression) =>
-			source.Execute(executor => executor.ExecuteAsync(callExpression));
+        public TResult Execute<TResult>(Expression<Func<TResult>> callExpression) =>
+            source.Execute(executor => executor.Execute(callExpression));
 
-		public TResult Execute<TResult>(Func<IGenericQueryableExecutor, TResult> execute) =>
+        public TResult Execute<TResult>(Func<IGenericQueryableExecutor, TResult> execute) =>
 			execute((source.Provider as IGenericQueryProvider)?.Executor ?? GenericQueryableExecutor.Sync);
 	}
 
@@ -98,6 +100,6 @@ public static class GenericQueryableExtensions
 	{
 		public Task<decimal?> GenericSumAsync(
 			CancellationToken cancellationToken = default) =>
-			source.ExecuteAsync(() => source.GenericSumAsync(cancellationToken));
+			source.Execute(() => source.GenericSumAsync(cancellationToken));
 	}
 }

@@ -8,29 +8,34 @@ namespace GenericQueryable.Services;
 
 public class GenericQueryableExecutor(IEnumerable<IMethodRedirector> methodRedirectors, IFetchService fetchService) : IGenericQueryableExecutor
 {
-	private readonly ILambdaCompileCache lambdaCompileCache = new LambdaCompileCache(LambdaCompileMode.None);
+    private readonly ILambdaCompileCache compileCache = new LambdaCompileCache(LambdaCompileMode.None);
 
-	public IFetchService FetchService { get; } = fetchService;
+    public IFetchService FetchService { get; } = fetchService;
 
-	public async Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> callExpression)
-	{
-		var redirectedExpressionRequest =
+    public TResult Execute<TResult>(Expression<Func<TResult>> callExpression)
+    {
+        var redirectedExpressionRequest =
 
-			from methodRedirector in methodRedirectors
+            from methodRedirector in methodRedirectors
 
-			let result = methodRedirector.TryRedirect(callExpression)
+            let result = methodRedirector.TryRedirect(callExpression)
 
-			where result != null
+            where result != null
 
-			select result;
+            select result;
 
-		var redirectedExpression = redirectedExpressionRequest.FirstOrDefault()
-		                           ?? throw new ArgumentOutOfRangeException(nameof(callExpression), "Expression can't be redirected");
+        var redirectedExpression = redirectedExpressionRequest.FirstOrDefault()
+                                   ?? throw new ArgumentOutOfRangeException(nameof(callExpression), "Expression can't be redirected");
 
-		return await lambdaCompileCache.GetFunc(redirectedExpression).Invoke();
-	}
+        return compileCache.GetFunc(redirectedExpression).Invoke();
+    }
 
-	public static IGenericQueryableExecutor Sync { get; } =
+    public static IGenericQueryableExecutor Sync { get; } =
 
-		new GenericQueryableExecutor([SyncMethodRedirector.Queryable, AsyncEnumerableMethodRedirector.Default], new IgnoreFetchService());
+        new GenericQueryableExecutor(
+        [
+            QueryableMethodRedirector.Default,
+            AsyncEnumerableMethodRedirector.Default,
+            new MethodRedirector(new CastToAsyncEnumerableTargetMethodExtractor())
+        ], new IgnoreFetchService());
 }

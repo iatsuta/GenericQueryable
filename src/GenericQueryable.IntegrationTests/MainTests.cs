@@ -67,6 +67,11 @@ public class MainTests
             .WithFetch(r => r.Fetch(v => v.DeepFetchObjects).ThenFetch(v => v.FetchObject))
             .GenericToDictionaryAsync(v => v.Id, v => v, cancellationToken: ct);
 
+        var result5 = await testSet
+            .WithFetch(r => r.Fetch(v => v.DeepFetchObjects).ThenFetch(v => v.FetchObject))
+            .GenericAsAsyncEnumerable()
+            .ToArrayAsync(ct);
+
         //Assert
         result0.Should().Contain(testObj);
     }

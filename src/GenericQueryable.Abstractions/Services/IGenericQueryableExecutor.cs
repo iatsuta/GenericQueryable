@@ -8,5 +8,5 @@ public interface IGenericQueryableExecutor
 {
 	IFetchService FetchService { get; }
 
-	Task<TResult> ExecuteAsync<TResult>(Expression<Func<Task<TResult>>> expression);
+    TResult Execute<TResult>(Expression<Func<TResult>> callExpression);
 }
