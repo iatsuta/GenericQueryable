@@ -8,11 +8,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace GenericQueryable.DependencyInjection;
 
-public class GenericQueryableSetup : IGenericQueryableSetup
+public class GenericQueryableBuilder : IGenericQueryableBuilder, IServiceCollectionBuilder
 {
     private Type fetchServiceType = typeof(IgnoreFetchService);
 
-    private Type targetMethodExtractorType = typeof(SyncTargetMethodExtractor);
+    private Type targetMethodExtractorType = typeof(QueryableTargetMethodExtractor);
 
     private readonly List<Type> fetchRuleExpanderTypeList = [];
 
@@ -40,7 +40,7 @@ public class GenericQueryableSetup : IGenericQueryableSetup
             services.AddSingleton(typeof(IFetchService), this.fetchServiceType);
         }
 
-        if (services.AlreadyInitialized<ITargetMethodExtractor, SyncTargetMethodExtractor>())
+        if (services.AlreadyInitialized<ITargetMethodExtractor, QueryableTargetMethodExtractor>())
         {
             services.ReplaceSingleton(typeof(ITargetMethodExtractor), this.targetMethodExtractorType);
         }
@@ -60,7 +60,7 @@ public class GenericQueryableSetup : IGenericQueryableSetup
         }
     }
 
-    public IGenericQueryableSetup SetFetchService<TFetchService>()
+    public IGenericQueryableBuilder SetFetchService<TFetchService>()
         where TFetchService : IFetchService
     {
         this.fetchServiceType = typeof(TFetchService);
@@ -68,14 +68,14 @@ public class GenericQueryableSetup : IGenericQueryableSetup
         return this;
     }
 
-    public IGenericQueryableSetup AddFetchRule<TSource>(FetchRuleHeader<TSource> header, PropertyFetchRule<TSource> implementation)
+    public IGenericQueryableBuilder AddFetchRule<TSource>(FetchRuleHeader<TSource> header, PropertyFetchRule<TSource> implementation)
     {
         this.fetchRuleHeaderInfoList.Add(new FetchRuleHeaderInfo<TSource>(header, implementation));
 
         return this;
     }
 
-    public IGenericQueryableSetup SetTargetMethodExtractor<TTargetMethodExtractor>()
+    public IGenericQueryableBuilder SetTargetMethodExtractor<TTargetMethodExtractor>()
         where TTargetMethodExtractor : ITargetMethodExtractor
     {
         this.targetMethodExtractorType = typeof(TTargetMethodExtractor);
@@ -83,7 +83,7 @@ public class GenericQueryableSetup : IGenericQueryableSetup
         return this;
     }
 
-    public IGenericQueryableSetup AddFetchRuleExpander<TFetchRuleExpander>()
+    public IGenericQueryableBuilder AddFetchRuleExpander<TFetchRuleExpander>()
         where TFetchRuleExpander : IFetchRuleExpander
     {
         this.fetchRuleExpanderTypeList.Add(typeof(TFetchRuleExpander));

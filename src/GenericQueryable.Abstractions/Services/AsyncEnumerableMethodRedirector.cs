@@ -24,15 +24,15 @@ public class AsyncEnumerableMethodRedirector(ITargetMethodExtractor targetMethod
 
 		var newArgs = new[] { newFirstArg }.Concat(tail);
 
-		return base.CreateCallExpression(targetMethod, newArgs).Pipe(WrapTask);
-	}
+        return base.CreateCallExpression(targetMethod, newArgs).Pipe(WrapTask);
+    }
 
 	private static Expression WrapTask(Expression callExpression)
 	{
-		var asTaskMethod = callExpression.Type.GetMethod(nameof(ValueTask<>.AsTask))!;
+		var asTaskMethod = callExpression.Type.GetMethod(nameof(ValueTask<>.AsTask));
 
-		return Expression.Call(callExpression, asTaskMethod);
+		return asTaskMethod == null ? callExpression : Expression.Call(callExpression, asTaskMethod);
 	}
 
-	public static AsyncEnumerableMethodRedirector Default { get; } = new(AsyncEnumerableMethodExtractor.Default);
+	public static IMethodRedirector Default { get; } = new AsyncEnumerableMethodRedirector(AsyncEnumerableTargetMethodExtractor.Default);
 }

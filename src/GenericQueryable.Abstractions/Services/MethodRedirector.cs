@@ -5,7 +5,7 @@ namespace GenericQueryable.Services;
 
 public class MethodRedirector(ITargetMethodExtractor targetMethodExtractor) : IMethodRedirector
 {
-	public Expression<Func<Task<TResult>>>? TryRedirect<TResult>(Expression<Func<Task<TResult>>> callExpression)
+	public Expression<Func<TResult>>? TryRedirect<TResult>(Expression<Func<TResult>> callExpression)
 	{
 		if (callExpression.Body is MethodCallExpression methodCallExpression)
 		{
@@ -17,7 +17,7 @@ public class MethodRedirector(ITargetMethodExtractor targetMethodExtractor) : IM
 
 				var newCallExpression = this.CreateCallExpression(targetMethod, args);
 
-				return Expression.Lambda<Func<Task<TResult>>>(newCallExpression);
+				return Expression.Lambda<Func<TResult>>(newCallExpression);
 			}
 		}
 

@@ -160,6 +160,20 @@ public class MainTests
     }
 
     [Fact]
+    public async Task GenericAsAsyncEnumerable_Should_Execute()
+    {
+        // Arrange
+        var baseSource = 1;
+        var qSource = new[] { baseSource }.AsQueryable();
+
+        // Act
+        var result = await qSource.GenericAsAsyncEnumerable().SingleAsync(cancellationToken: ct);
+
+        //Assert
+        result.Should().Be(baseSource);
+    }
+
+    [Fact]
     public async Task DefaultGenericQueryable_InvokeFetch_FetchIgnored()
     {
         // Arrange
