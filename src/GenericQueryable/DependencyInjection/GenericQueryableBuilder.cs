@@ -2,13 +2,12 @@
 
 using GenericQueryable.Fetching;
 using GenericQueryable.Services;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace GenericQueryable.DependencyInjection;
 
-public class GenericQueryableBuilder : IGenericQueryableBuilder, IServiceCollectionBuilder
+public class GenericQueryableBuilder : IGenericQueryableBuilder, IServiceInitializer
 {
     private Type fetchServiceType = typeof(IgnoreFetchService);
 

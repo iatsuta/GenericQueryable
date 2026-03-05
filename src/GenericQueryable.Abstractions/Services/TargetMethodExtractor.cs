@@ -12,7 +12,7 @@ public class TargetMethodExtractor(ImmutableList<Type> extensionsTypes) : ITarge
 
 	public MethodInfo? TryGetTargetMethod(MethodInfo baseMethod)
 	{
-		return this.mappingMethodCache.GetOrAdd(baseMethod, _ =>
+		return this.mappingMethodCache.GetOrAdd(baseMethod, () =>
         {
             if (this.TryGetTargetMethodName(baseMethod) is { } targetMethodName)
             {

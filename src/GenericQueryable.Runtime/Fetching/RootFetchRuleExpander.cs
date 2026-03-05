@@ -8,7 +8,7 @@ public class RootFetchRuleExpander(IEnumerable<IFetchRuleExpander> expanders) : 
 {
     public const string Key = "Root";
 
-    private readonly ConcurrentDictionary<Type, object> cache = new();
+    private readonly ConcurrentDictionary<Type, object> cache = [];
 
     public PropertyFetchRule<TSource>? TryExpand<TSource>(FetchRule<TSource> fetchRule)
     {
@@ -19,9 +19,9 @@ public class RootFetchRuleExpander(IEnumerable<IFetchRuleExpander> expanders) : 
         else
         {
             return cache
-                .GetOrAdd(fetchRule.GetType(), _ => new ConcurrentDictionary<FetchRule<TSource>, PropertyFetchRule<TSource>?>())
+                .GetOrAdd(fetchRule.GetType(), () => new ConcurrentDictionary<FetchRule<TSource>, PropertyFetchRule<TSource>?>())
                 .Pipe(innerCache => (ConcurrentDictionary<FetchRule<TSource>, PropertyFetchRule<TSource>?>)innerCache)
-                .GetOrAdd(fetchRule, _ =>
+                .GetOrAdd(fetchRule, () =>
                 {
                     var request =
 
