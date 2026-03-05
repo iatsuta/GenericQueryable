@@ -7,7 +7,7 @@ namespace GenericQueryable.IntegrationTests.Domain;
 public class DeepFetchObject
 {
     [Key]
-    public Guid Id { get; set; }
+    public virtual Guid Id { get; set; }
 
-    public FetchObject? FetchObject { get; set; }
+    public virtual FetchObject? FetchObject { get; set; }
 }

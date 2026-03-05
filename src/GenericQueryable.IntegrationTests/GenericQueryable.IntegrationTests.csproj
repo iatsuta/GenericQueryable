@@ -6,19 +6,18 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="IvAt.CommonFramework.DependencyInjection" />
+    <PackageReference Include="IvAt.CommonFramework.GenericRepository" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit.runner.visualstudio">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit.v3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GenericQueryable.EntityFramework\GenericQueryable.EntityFramework.csproj" />
+    <ProjectReference Include="..\GenericQueryable\GenericQueryable.csproj" />
   </ItemGroup>
-
 
   <ItemGroup>
     <Using Include="Xunit" />

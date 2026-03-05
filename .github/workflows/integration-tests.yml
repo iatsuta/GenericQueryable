@@ -34,4 +34,8 @@ jobs:
 
       - name: NHibernate Integration Tests
         run: |
-          dotnet test --blame src/GenericQueryable.IntegrationTests --no-build --verbosity normal;
+          dotnet test --blame src/GenericQueryable.IntegrationTests.NHibernate --no-build --verbosity normal;
+          
+      - name: EntityFramework Integration Tests
+        run: |
+          dotnet test --blame src/GenericQueryable.IntegrationTests.EntityFramework --no-build --verbosity normal;

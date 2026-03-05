@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>GenericQueryable.IntegrationTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentNHibernate" />
+    <PackageReference Include="IvAt.CommonFramework.IdentitySource" />
+    <PackageReference Include="System.Data.SQLite.Core" />
+
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GenericQueryable.NHibernate\GenericQueryable.NHibernate.csproj" />
+    <ProjectReference Include="..\GenericQueryable.IntegrationTests\GenericQueryable.IntegrationTests.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

@@ -1,8 +1,7 @@
 ﻿using GenericQueryable.IntegrationTests.Domain;
-
 using Microsoft.EntityFrameworkCore;
 
-namespace GenericQueryable.IntegrationTests;
+namespace GenericQueryable.IntegrationTests.Environment;
 
 public class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(options)
 {
