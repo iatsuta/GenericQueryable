@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IvAt.GenericQueryable.NHibernate</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NHibernate" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GenericQueryable\GenericQueryable.csproj" />
+  </ItemGroup>
+
+</Project>

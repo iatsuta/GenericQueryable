@@ -7,7 +7,7 @@ namespace GenericQueryable.IntegrationTests.Domain;
 public class TestObject
 {
     [Key]
-    public Guid Id { get; set; }
+    public virtual Guid Id { get; set; }
 
     public virtual FetchObject? FetchObject { get; set; }
 
