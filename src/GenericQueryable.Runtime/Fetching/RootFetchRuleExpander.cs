@@ -19,9 +19,8 @@ public class RootFetchRuleExpander(IEnumerable<IFetchRuleExpander> expanders) : 
         else
         {
             return cache
-                .GetOrAdd(fetchRule.GetType(), () => new ConcurrentDictionary<FetchRule<TSource>, PropertyFetchRule<TSource>?>())
-                .Pipe(innerCache => (ConcurrentDictionary<FetchRule<TSource>, PropertyFetchRule<TSource>?>)innerCache)
-                .GetOrAdd(fetchRule, () =>
+                .GetOrAddAs(fetchRule.GetType(), _ => new ConcurrentDictionary<FetchRule<TSource>, PropertyFetchRule<TSource>?>())
+                .GetOrAdd(fetchRule, _ =>
                 {
                     var request =
 

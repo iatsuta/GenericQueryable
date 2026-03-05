@@ -12,16 +12,14 @@ public class UntypedFetchExpander : IFetchRuleExpander
     {
         if (fetchRule is UntypedFetchRule<TSource> untypedFetchRule)
         {
-            return this.cache.GetOrAdd(typeof(TSource), () => new ConcurrentDictionary<UntypedFetchRule<TSource>, PropertyFetchRule<TSource>>())
-                .Pipe(innerCache => (ConcurrentDictionary<UntypedFetchRule<TSource>, PropertyFetchRule<TSource>>)innerCache)
-                .Pipe(innerCache => innerCache.GetOrAdd(
-                    untypedFetchRule,
-                    () =>
-                    {
-                        var fetchPath = LambdaExpressionPath.Create(typeof(TSource), untypedFetchRule.Path.Split('.'));
+            return this.cache
+                .GetOrAddAs(typeof(TSource), _ => new ConcurrentDictionary<UntypedFetchRule<TSource>, PropertyFetchRule<TSource>>())
+                .GetOrAdd(untypedFetchRule, _ =>
+                {
+                    var fetchPath = LambdaExpressionPath.Create(typeof(TSource), untypedFetchRule.Path.Split('.'));
 
-                        return new PropertyFetchRule<TSource>([fetchPath]);
-                    }));
+                    return new PropertyFetchRule<TSource>([fetchPath]);
+                });
         }
 
         return null;

@@ -15,16 +15,13 @@ public class FetchRuleHeaderExpander(IEnumerable<FetchRuleHeaderInfo> fetchRuleH
     {
         if (fetchRule is FetchRuleHeader<TSource> fetchRuleHeader)
         {
-            return cache.GetOrAdd(fetchRuleHeader.GetType(),
-                    () => headersDict
-                        .GetValueOrDefault(typeof(TSource))
-                        .EmptyIfNull()
-                        .Cast<FetchRuleHeaderInfo<TSource>>()
-                        .ToDictionary(info => info.Header, info => info.Implementation))
-
-                .Pipe(innerCache => (IReadOnlyDictionary<FetchRuleHeader<TSource>, PropertyFetchRule<TSource>>)innerCache)
-
-                .Pipe(innerCache => innerCache.GetValueOrDefault(fetchRuleHeader));
+            return cache
+                .GetOrAddAs(fetchRuleHeader.GetType(), _ => headersDict
+                    .GetValueOrDefault(typeof(TSource))
+                    .EmptyIfNull()
+                    .Cast<FetchRuleHeaderInfo<TSource>>()
+                    .ToDictionary(info => info.Header, info => info.Implementation))
+                .GetValueOrDefault(fetchRuleHeader);
         }
         else
         {
