@@ -20,8 +20,7 @@ public abstract class FetchService([FromKeyedServices(RootFetchRuleExpander.Key)
         where TSource : class
     {
         return this.rootCache
-            .GetOrAdd(fetchRule.GetType(), _ => new ConcurrentDictionary<FetchRule<TSource>, Func<IQueryable<TSource>, IQueryable<TSource>>>())
-            .Pipe(v => (ConcurrentDictionary<FetchRule<TSource>, Func<IQueryable<TSource>, IQueryable<TSource>>>)v)
+            .GetOrAddAs(fetchRule.GetType(), _ => new ConcurrentDictionary<FetchRule<TSource>, Func<IQueryable<TSource>, IQueryable<TSource>>>())
             .GetOrAdd(fetchRule, _ =>
             {
                 var fetchExpr = this.GetApplyFetchExpression(fetchRuleExpander.Expand(fetchRule));
