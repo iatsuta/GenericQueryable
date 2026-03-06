@@ -5,7 +5,7 @@ using FluentNHibernate.Conventions.AcceptanceCriteria;
 using FluentNHibernate.Conventions.Inspections;
 using FluentNHibernate.Conventions.Instances;
 
-using GenericQueryable.IntegrationTests.Mapping;
+using GenericQueryable.IntegrationTests.Environment.Mapping;
 using GenericQueryable.NHibernate;
 
 using NHibernate.Cfg;
@@ -16,7 +16,7 @@ using NHibernate.Tool.hbm2ddl;
 
 namespace GenericQueryable.IntegrationTests.Environment;
 
-public static class TestSystemConfigurationHelper
+public static class BuildConfigurationHelper
 {
     public static Configuration BuildConfiguration(string connectionString)
     {

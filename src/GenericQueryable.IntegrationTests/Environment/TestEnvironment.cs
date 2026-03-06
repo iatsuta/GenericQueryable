@@ -7,7 +7,7 @@ using GenericQueryable.IntegrationTests.Domain;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GenericQueryable.IntegrationTests;
+namespace GenericQueryable.IntegrationTests.Environment;
 
 public abstract class TestEnvironment
 {

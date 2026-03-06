@@ -1,12 +1,12 @@
 ﻿using CommonFramework.GenericRepository;
 
 using GenericQueryable.IntegrationTests.Domain;
-
+using GenericQueryable.IntegrationTests.Environment;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GenericQueryable.IntegrationTests;
 
-public class MainTestsBase(TestEnvironment testEnvironment) : IAsyncLifetime
+public abstract class MainTests(TestEnvironment testEnvironment) : IAsyncLifetime
 {
     private readonly Guid testObjId = Guid.NewGuid();
 
@@ -28,6 +28,7 @@ public class MainTestsBase(TestEnvironment testEnvironment) : IAsyncLifetime
         await genericRepository.SaveAsync(new TestObject { Id = testObjId, FetchObject = fetchObj }, cancellationToken);
     }
 
+    [Fact]
     public virtual async Task DefaultGenericQueryable_InvokeToListAsync_MethodInvoked()
     {
         // Arrange

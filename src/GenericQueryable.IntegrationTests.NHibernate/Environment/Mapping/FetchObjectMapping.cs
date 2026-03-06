@@ -1,8 +1,7 @@
 ﻿using FluentNHibernate.Mapping;
-
 using GenericQueryable.IntegrationTests.Domain;
 
-namespace GenericQueryable.IntegrationTests.Mapping;
+namespace GenericQueryable.IntegrationTests.Environment.Mapping;
 
 public class FetchObjectMapping : ClassMap<FetchObject>
 {
