@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\GenericQueryable.IntegrationTests.EntityFramework\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentNHibernate" />
     <PackageReference Include="IvAt.CommonFramework.IdentitySource" />
     <PackageReference Include="System.Data.SQLite.Core" />

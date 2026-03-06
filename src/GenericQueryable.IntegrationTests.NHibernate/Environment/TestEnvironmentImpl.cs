@@ -1,6 +1,7 @@
 ﻿using CommonFramework.DependencyInjection;
 using CommonFramework.GenericRepository;
 using CommonFramework.IdentitySource.DependencyInjection;
+
 using GenericQueryable.NHibernate;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -9,14 +10,14 @@ using NHibernate;
 
 namespace GenericQueryable.IntegrationTests.Environment;
 
-public class NHibTestEnvironment : TestEnvironment
+public class TestEnvironmentImpl : TestEnvironment
 {
     protected override IServiceCollection InitializeServices(IServiceCollection services)
     {
         return services
 
             .AddIdentitySource()
-            .AddSingleton(TestSystemConfigurationHelper.BuildConfiguration("Data Source=TestSystem.sqlite"))
+            .AddSingleton(BuildConfigurationHelper.BuildConfiguration("Data Source=TestSystem.sqlite"))
             .AddSingletonFrom((global::NHibernate.Cfg.Configuration cfg) => cfg.BuildSessionFactory())
             .AddScopedFrom((ISessionFactory sessionFactory) => sessionFactory.OpenSession())
 
@@ -29,5 +30,5 @@ public class NHibTestEnvironment : TestEnvironment
     {
     }
 
-    public static TestEnvironment Instance { get; } = new NHibTestEnvironment();
+    public static TestEnvironmentImpl Instance { get; } = new ();
 }

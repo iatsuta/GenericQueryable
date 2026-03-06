@@ -1,12 +1,14 @@
 ﻿using CommonFramework.GenericRepository;
+
 using GenericQueryable.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GenericQueryable.IntegrationTests.Environment;
 
-public class EfTestEnvironment : TestEnvironment
+public class TestEnvironmentImpl : TestEnvironment
 {
     protected override IServiceCollection InitializeServices(IServiceCollection services)
     {
@@ -30,5 +32,5 @@ public class EfTestEnvironment : TestEnvironment
         await dbContext.Database.EnsureCreatedAsync(cancellationToken);
     }
 
-    public static TestEnvironment Instance { get; } = new EfTestEnvironment();
+    public static TestEnvironmentImpl Instance { get; } = new ();
 }
