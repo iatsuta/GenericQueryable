@@ -2,6 +2,7 @@
 
 using GenericQueryable.Fetching;
 using GenericQueryable.Services;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
