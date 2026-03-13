@@ -83,11 +83,14 @@ public static class GenericQueryableExtensions
 			CancellationToken cancellationToken = default) =>
 			source.Execute(() => source.GenericFirstOrDefaultAsync(filter, cancellationToken));
 
-        public IAsyncEnumerable<TSource> GenericAsAsyncEnumerable() => source.Execute(() => source.GenericAsAsyncEnumerable());
+        public Task<bool> GenericContainsAsync(TSource value, CancellationToken cancellationToken = default) =>
+            source.Execute(() => source.GenericContainsAsync(value, cancellationToken));
 
         public Task<decimal?> GenericSumAsync(Expression<Func<TSource, decimal?>> selector,
-			CancellationToken cancellationToken = default) =>
-			source.Execute(() => source.GenericSumAsync(selector, cancellationToken));
+            CancellationToken cancellationToken = default) =>
+            source.Execute(() => source.GenericSumAsync(selector, cancellationToken));
+
+        public IAsyncEnumerable<TSource> GenericAsAsyncEnumerable() => source.Execute(() => source.GenericAsAsyncEnumerable());
 
         public TResult Execute<TResult>(Expression<Func<TResult>> callExpression) =>
             source.Execute(executor => executor.Execute(callExpression));
