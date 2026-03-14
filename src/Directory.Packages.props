@@ -4,10 +4,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="FluentNHibernate" Version="3.4.1" />
-    <PackageVersion Include="IvAt.CommonFramework" Version="3.0.1" />
-    <PackageVersion Include="IvAt.CommonFramework.DependencyInjection" Version="3.0.1" />
-    <PackageVersion Include="IvAt.CommonFramework.GenericRepository" Version="3.0.1" />
-    <PackageVersion Include="IvAt.CommonFramework.IdentitySource" Version="3.0.1" />
+    <PackageVersion Include="IvAt.CommonFramework" Version="3.0.2" />
+    <PackageVersion Include="IvAt.CommonFramework.DependencyInjection" Version="3.0.2" />
+    <PackageVersion Include="IvAt.CommonFramework.GenericRepository" Version="3.0.2" />
+    <PackageVersion Include="IvAt.CommonFramework.IdentitySource" Version="3.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
