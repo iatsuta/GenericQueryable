@@ -1,18 +1,19 @@
-﻿using CommonFramework;
-using CommonFramework.GenericRepository;
+﻿using CommonFramework.GenericRepository;
+
+using Microsoft.Extensions.DependencyInjection;
 
 using NHibernate;
 
 namespace GenericQueryable.IntegrationTests.Environment;
 
 public class NHibGenericRepository(
-    IServiceProxyFactory serviceProxyFactory,
+    IServiceProvider serviceProvider,
     ISession session) : IGenericRepository
 {
     public async Task SaveAsync<TDomainObject>(TDomainObject domainObject, CancellationToken cancellationToken)
         where TDomainObject : class
     {
-        await serviceProxyFactory.Create<IDomainObjectSaveStrategy<TDomainObject>>().SaveAsync(session, domainObject, cancellationToken);
+        await serviceProvider.GetRequiredService<IDomainObjectSaveStrategy<TDomainObject>>().SaveAsync(session, domainObject, cancellationToken);
 
         await session.FlushAsync(cancellationToken);
     }
