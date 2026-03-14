@@ -3,12 +3,8 @@ using CommonFramework.IdentitySource;
 
 namespace GenericQueryable.IntegrationTests.Environment;
 
-public class DomainObjectSaveStrategyServiceProxyBinder<TDomainObject>(IIdentityInfoSource identityInfoSource) : IServiceProxyBinder
+public class DomainObjectSaveStrategyServiceProxyBinder<TDomainObject>(IIdentityInfo<TDomainObject> identityInfo) : IServiceProxyBinder
 {
-    public Type GetTargetServiceType()
-    {
-        var identityInfo = identityInfoSource.GetIdentityInfo(typeof(TDomainObject));
-
-        return typeof(DomainObjectSaveStrategy<,>).MakeGenericType(identityInfo.DomainObjectType, identityInfo.IdentityType);
-    }
+    public Type GetTargetServiceType() =>
+        typeof(DomainObjectSaveStrategy<,>).MakeGenericType(identityInfo.DomainObjectType, identityInfo.IdentityType);
 }
