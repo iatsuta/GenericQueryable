@@ -2,6 +2,7 @@
 
 using GenericQueryable.IntegrationTests.Domain;
 using GenericQueryable.IntegrationTests.Environment;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GenericQueryable.IntegrationTests;

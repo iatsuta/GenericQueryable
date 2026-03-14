@@ -21,6 +21,8 @@ public class TestEnvironmentImpl : TestEnvironment
             .AddSingletonFrom((global::NHibernate.Cfg.Configuration cfg) => cfg.BuildSessionFactory())
             .AddScopedFrom((ISessionFactory sessionFactory) => sessionFactory.OpenSession())
 
+            .BindServiceProxy(typeof(IDomainObjectSaveStrategy<>), typeof(DomainObjectSaveStrategyServiceProxyBinder<>))
+
             .AddScoped<IGenericRepository, NHibGenericRepository>()
             .AddScoped<IQueryableSource, NHibQueryableSource>()
             .AddNHibernateGenericQueryable(this.SetupGenericQueryable);
